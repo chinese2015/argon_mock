@@ -1,0 +1,12 @@
+# Build output
+backend/target/
+demo-repos/*/target/
+
+# Runtime data (H2 database, notification outbox)
+backend/data/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.iml

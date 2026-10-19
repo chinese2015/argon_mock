@@ -1,0 +1,17 @@
+To: tester@example.test
+From: argon-demo@example.test
+Subject: [Argon DEMO] 3 open synthetic findings
+Content-Type: text/plain; charset=UTF-8
+
+Argon DEMO — Synthetic Vulnerability Digest
+
+TRAINING DATA ONLY. DO NOT TREAT AS A REAL SECURITY ALERT.
+
+Open findings matching your subscription: 3
+Frequency: DAILY; Minimum severity: HIGH
+
+FND-00005 | CRITICAL | CVSS 9.9 | DEMO-APP-005 | Example expression parser needs input validation
+FND-00002 | HIGH | CVSS 8.1 | DEMO-APP-002 | Demo search endpoint accepts unsanitized test input
+FND-00001 | HIGH | CVSS 7.6 | DEMO-APP-001 | Example missing object-owner check in a sample API
+
+This email is a static preview. Start the backend and confirm a subscription to generate real local .eml preview files.

@@ -1,0 +1,36 @@
+server:
+  address: ${BIND_ADDRESS:127.0.0.1} # local demo by default
+  port: ${PORT:8080}
+  error:
+    include-message: always
+spring:
+  application:
+    name: argon-demo
+  datasource:
+    url: jdbc:h2:file:./data/argon-demo;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update  # local demo only; migrate with Flyway for real deployment
+    open-in-view: false
+  h2:
+    console:
+      enabled: false
+  mail:
+    host: ${SMTP_HOST:}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USER:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${SMTP_AUTH:true}
+      mail.smtp.starttls.enable: ${SMTP_STARTTLS:true}
+notification:
+  mode: ${MAIL_MODE:preview} # preview saves .eml to ./data/outbox; never sends to a remote mail server
+  base-url: ${PUBLIC_BASE_URL:http://localhost:8080}
+  from: ${MAIL_FROM:argon-demo@example.test}
+  smtp-allowed-recipients: ${SMTP_ALLOWED_RECIPIENTS:}
+  cron: '0 0 8 * * *'
+  zone: UTC
+  outbox-dir: ./data/outbox

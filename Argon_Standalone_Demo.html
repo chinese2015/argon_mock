@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Argon | Security Findings Demo</title>
+  <meta name="description" content="Argon fictional vulnerability-remediation demonstration, with an optional same-origin backend for digest subscriptions." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none' data: blob:; connect-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'" />
+  <style>
+:root{--blue:#087f8c;--darkblue:#134c63;--deepblue:#13374b;--lightblue:#e7f5f5;--border:#dce3ef;--ink:#1c2c41;--muted:#718198;--bg:#f7f9fd;--shadow:0 12px 38px rgba(20,45,96,.12)}
+*{box-sizing:border-box}html{font-family:Inter,"Segoe UI",Arial,"Helvetica Neue",sans-serif;font-size:13px;color:var(--ink)}body{margin:0;background:#f8faff}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}svg{display:inline-block;vertical-align:middle}a{color:var(--blue);text-decoration:none}
+.app-shell{display:flex;min-height:100vh}.sidebar{flex:0 0 226px;width:226px;background:linear-gradient(162deg,#1a5a68 0%,#123b50 55%,#102c42 100%);color:#d4e6ff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;box-shadow:5px 0 24px rgba(9,38,113,.08);z-index:4;transition:width .2s,flex-basis .2s}.sidebar.collapsed{width:70px;flex-basis:70px}.brand{display:flex;gap:10px;align-items:center;padding:22px 20px 25px;color:white;height:83px}.brand-mark{width:31px;height:31px;flex-shrink:0;display:grid;place-items:center;border:2px solid #a8e4e3;border-radius:9px;background:rgba(255,255,255,.10)}.brand-mark:before{content:"✓";font-size:20px;font-weight:700;color:#d5fffd}.brand-text{font-size:17px;font-weight:850;line-height:.87;letter-spacing:.55px}.brand-text small{font-size:11px;font-weight:700;letter-spacing:1.7px}.section-title{padding:15px 20px 9px;color:#86a9ee;text-transform:uppercase;font-size:10px;letter-spacing:1.5px;font-weight:800}.side-nav{padding:0 10px}.side-link{border:0;background:transparent;color:#bfd6ff;width:100%;display:flex;align-items:center;gap:12px;text-align:left;border-radius:5px;padding:12px 13px;margin:2px 0;min-height:41px;white-space:nowrap;font-size:12.5px}.side-link:hover{background:rgba(255,255,255,.08);color:white}.side-link.active{background:rgba(65,183,179,.20);box-shadow:inset 3px 0 0 #70d4d0;color:white;font-weight:700}.side-link .nav-icon{width:17px;height:17px;flex-shrink:0}.sidebar-faint{opacity:.48}.side-bottom{margin-top:auto;padding:20px 15px 16px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:9px;align-items:center;min-width:0}.avatar{width:34px;height:34px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;background:#ce8f20;color:#0a2174;font-weight:900}.identity{min-width:0}.identity strong{display:block;color:#fff;font-size:12px;font-weight:600}.identity small{display:block;color:#98bafa;font-size:10px;margin-top:3px}.side-collapse{position:absolute;top:103px;right:-11px;border-radius:50%;height:22px;width:22px;background:var(--blue);border:2px solid white;color:white;display:grid;place-items:center;padding:0;box-shadow:0 0 5px #3065cb}.sidebar.collapsed .brand-text,.sidebar.collapsed .section-title,.sidebar.collapsed .side-link span,.sidebar.collapsed .identity{display:none}.sidebar.collapsed .brand{padding-left:20px}.sidebar.collapsed .side-link{justify-content:center;padding:12px}.sidebar.collapsed .side-bottom{justify-content:center}
+.workspace{flex:1;min-width:0}.topbar{height:67px;background:#fff;border-bottom:1px solid #d9e5fb;display:flex;align-items:center;justify-content:space-between;padding:0 28px}.breadcrumbs{font-size:12px;color:#6b809a}.breadcrumbs strong{color:#0554c8;font-weight:750}.breadcrumbs .sep{margin:0 12px;color:#b6c2d4}.topbar-right{display:flex;gap:16px;align-items:center}.topbar-bell{border:0;background:none;padding:5px;color:#576b88;position:relative}.topbar-bell:after{content:"";width:6px;height:6px;position:absolute;top:2px;right:3px;background:#e45e65;border:2px solid white;border-radius:50%}.top-avatar{background:#e1e9f9;border-radius:50%;color:#204ba0;display:grid;place-items:center;width:30px;height:30px;font-size:11px;font-weight:750}.main{padding:25px 28px 46px;max-width:1900px;margin:auto}.page-title{font-size:23px;line-height:1.2;letter-spacing:-.45px;margin:0;color:#0750ae;font-weight:760}.page-subtitle{color:#64778e;font-size:12px;line-height:1.6;margin:7px 0 18px}.panel{background:#fff;border:1px solid #dfe6f1;border-radius:8px;box-shadow:0 2px 11px rgba(16,66,153,.025)}.search-panel{padding:14px 16px;margin-bottom:12px}.search-row{display:flex;align-items:center;gap:11px;flex-wrap:wrap}.search-box{display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:5px;height:35px;padding:0 9px;background:#fff;min-width:235px;max-width:430px;flex:1}.search-box:focus-within{border-color:#4387f4;box-shadow:0 0 0 2px rgba(50,110,230,.10)}.search-box svg{color:#91a0b4;flex-shrink:0}.search-box input{outline:0;border:0;min-width:0;width:100%;color:var(--ink);font-size:12px}.field-select{border:1px solid var(--border);height:35px;min-width:153px;max-width:260px;border-radius:5px;padding:0 33px 0 10px;background:#fff;color:#354b62}.btn{border:1px solid #a8bedf;background:#fff;color:#1e58a2;border-radius:5px;padding:8px 12px;min-height:32px;display:inline-flex;gap:6px;justify-content:center;align-items:center;white-space:nowrap;font-size:12px;font-weight:620;box-shadow:0 1px 2px rgba(8,40,95,.04)}.btn:hover{background:#eff5ff;border-color:#6a9feb}.btn-primary{background:#087f8c;border-color:#087f8c;color:#fff}.btn-primary:hover{background:#076771;border-color:#076771}.btn-soft{background:#edf4ff}.btn-sm{font-size:11.5px;min-height:29px;padding:6px 9px}.btn-light{background:#fafcff}.btn-icon{padding:7px;min-width:29px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 2px 11px;flex-wrap:wrap}.toolbar-group{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.muted{color:#7e8da3}.small-note{font-size:11px;color:#8b9aaf}.chips{display:inline-flex;gap:4px;align-items:center}.chip{border:1px solid #abc8fc;background:#eaf3ff;color:#0e5ac4;border-radius:14px;padding:5px 10px;font-size:11px;font-weight:650;min-height:26px}.chip.selected{background:#087f8c;border-color:#087f8c;color:#fff}.pill-count{color:#72829a;font-size:11px}.dropdown-wrap{position:relative}.dropdown{position:absolute;z-index:20;top:calc(100% + 8px);left:0;min-width:225px;background:#fff;border-radius:9px;box-shadow:var(--shadow);border:1px solid #dbe5f5;padding:15px}.dropdown.right{left:auto;right:0}.dropdown h4{margin:0 0 13px;font-size:13px}.dropdown label{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:10px}.dropdown input[type=checkbox]{accent-color:#0c4fc5}.dropdown-actions{display:flex;justify-content:end;gap:6px;padding-top:10px;border-top:1px solid #edf1f7}.pagination-top{display:flex;gap:8px;align-items:center;margin-bottom:10px}.pagination-top span{color:#65768c;font-size:11px;margin-left:6px}.table-panel{overflow:hidden}.table-scroll{width:100%;overflow-x:auto}.findings-table{border-collapse:collapse;width:100%;min-width:1120px;table-layout:fixed}.findings-table th{height:58px;text-align:left;font-size:10px;letter-spacing:.35px;line-height:1.3;color:#0a60b6;font-weight:750;background:#f2f7fe;border-top:1px solid #e2eafa;border-bottom:1px solid #d9e2ef;padding:10px 8px;white-space:normal;vertical-align:middle}.findings-table th.sortable{cursor:pointer}.findings-table th.sortable:hover{background:#e8f1fd}.findings-table th .sort-marker{margin-left:4px;color:#9daec8}.findings-table td{font-size:11px;padding:10px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-bottom:1px solid #e9eef5;color:#344356;height:42px}.findings-table tbody tr{cursor:pointer}.findings-table tbody tr:hover{background:#edf5ff}.findings-table tbody tr.selected-row{background:#eaf3ff}.findings-table input[type=checkbox]{accent-color:#145bd4}.findings-table th:first-child,.findings-table td:first-child{text-align:center}.findings-table .low{color:#7b8da0}.risk-high{color:#a05f0b;font-weight:650}.risk-critical{color:#c43645;font-weight:750}.cat-tag{padding:4px 7px;border-radius:5px;background:#eaf3ed;color:#42664d;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;font-size:10px;font-weight:650}.cat-tag.indigo{background:#e9edfa;color:#475c93}.cat-tag.gray{background:#eef1f6;color:#50677d}.status{display:inline-flex;align-items:center;gap:5px;color:#5a6473}.status-dot{width:6px;height:6px;border-radius:50%;background:#b7bdcb}.status.progress .status-dot{background:#2f8fd5}.status.fixed .status-dot{background:#42a66a}.table-bottom{display:flex;justify-content:space-between;align-items:center;padding:13px 17px;color:#78869a;font-size:12px}.table-bottom .pagination-top{margin:0}.empty-state{text-align:center;padding:80px 20px;color:#73859e}.empty-state h3{color:#435974}
+.back-link{display:inline-flex;gap:6px;align-items:center;color:#0b57b9;font-size:12px;background:none;border:0;margin:0 0 17px;padding:0}.detail-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.detail-metrics{display:grid;grid-template-columns:repeat(3,1fr);margin:18px 0;padding:23px 24px;gap:15px}.metric-label{color:#6c7a8d;font-size:12px;margin-bottom:6px}.metric-value{color:#26384f;font-weight:760;font-size:17px}.detail-columns{display:grid;grid-template-columns:minmax(450px,1.12fr) minmax(360px,.88fr);gap:16px;align-items:start}.details-card{padding:23px 22px}.card-head{font-weight:750;color:#173a6b;font-size:15px;margin:0 0 18px;display:flex;align-items:center;gap:8px}.detail-row{display:grid;grid-template-columns:180px minmax(0,1fr);gap:12px;align-items:start;padding:12px 2px;border-bottom:1px solid #ecf0f6;line-height:1.35;font-size:12px}.detail-row .key{color:#657388}.detail-row .value{font-weight:600;color:#344458;overflow-wrap:anywhere}.subsection{font-size:14px;color:#173a6b;font-weight:750;margin:25px 0 12px}.prose{font-size:12px;line-height:1.85;color:#556579;white-space:pre-wrap}.response-card{padding:22px 22px 24px;position:sticky;top:15px}.form-field{margin-bottom:15px}.form-field label{display:block;font-size:12px;color:#344155;font-weight:700;margin-bottom:7px}.form-field .hint{font-size:11.5px;line-height:1.55;color:#667589;margin:7px 0 0}.input,.textarea,.select{display:block;border:1px solid #d6dfed;border-radius:5px;background:white;width:100%;height:38px;padding:0 11px;color:#344458;outline:none;font-size:12px}.input:focus,.textarea:focus,.select:focus{border-color:#3a77e6;box-shadow:0 0 0 2px rgba(45,110,220,.08)}.textarea{height:auto;min-height:90px;resize:vertical;padding:11px}.upload-box{border:1px dashed #bfd0e8;border-radius:5px;padding:12px;display:flex;align-items:center;gap:12px;justify-content:space-between;color:#728095;font-size:11.5px}.upload-box input{display:none}.form-two{display:grid;grid-template-columns:1fr 1fr;gap:13px}.form-footer{display:flex;align-items:center;gap:8px;margin-top:17px;flex-wrap:wrap}.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:20px 0}.summary-card{padding:20px}.summary-card .number{font-size:28px;color:#164fbc;font-weight:760;margin:7px 0}.summary-card .label{color:#74839b;font-size:12px}.summary-card .meta{font-size:11px;color:#7e9c8c}.dashboard-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}.dashboard-card{padding:21px}.bar-row{display:flex;align-items:center;gap:14px;margin:18px 0}.bar-label{width:85px;font-size:11px;color:#596981}.bar-track{flex:1;height:9px;background:#ecf1fb;border-radius:20px;overflow:hidden}.bar-fill{height:100%;border-radius:20px;background:#1a62d1}.bar-num{width:30px;text-align:right;color:#637991;font-size:12px}.activity{display:flex;gap:12px;align-items:start;padding:12px 2px;border-bottom:1px solid #eff2f7;font-size:12px}.activity-bubble{width:8px;height:8px;flex-shrink:0;background:#2473d9;border-radius:50%;margin-top:5px}.activity strong{display:block;color:#395272;margin-bottom:6px}.activity span{color:#8492a4;font-size:11px}.placeholder-view{text-align:center;padding:90px 24px}.placeholder-view svg{color:#477bc4}.placeholder-view h2{font-size:20px;color:#355077}.placeholder-view p{color:#8090a4;line-height:1.6}.placeholder-view .btn{margin-top:13px}
+.modal-layer{position:fixed;inset:0;z-index:50;background:rgba(9,28,61,.48);display:flex;align-items:center;justify-content:center;padding:20px}.modal{width:min(570px,100%);max-height:90vh;overflow:auto;background:white;border-radius:10px;box-shadow:0 23px 80px rgba(0,14,51,.25)}.modal-title{font-size:17px;font-weight:750;margin:0}.modal-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e4eafa;padding:19px 22px}.modal-content{padding:23px}.modal-footer{padding:15px 22px;border-top:1px solid #e8eef6;display:flex;justify-content:end;gap:8px}.modal-close{background:none;border:0;color:#8b99aa;font-size:22px}.check-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.check-grid label{font-size:12px;color:#52627a;display:flex;align-items:center;gap:7px}.check-grid input{accent-color:#1158ce}.toast{position:fixed;right:22px;bottom:23px;z-index:100;min-width:280px;max-width:450px;background:#16396e;color:#fff;padding:15px 18px;border-radius:8px;box-shadow:var(--shadow);font-size:12px;display:flex;align-items:center;gap:11px}.toast svg{color:#70ddb0}.demo-banner{font-size:10px;color:#8092a9;margin:7px 0 -4px}
+@media(max-width:1100px){.sidebar{flex-basis:191px;width:191px}.main{padding:22px 19px}.detail-columns{grid-template-columns:minmax(0,1fr)}.response-card{position:static}}@media(max-width:750px){.sidebar{flex-basis:61px;width:61px}.sidebar .brand-text,.sidebar .section-title,.sidebar .side-link span,.sidebar .identity{display:none}.sidebar .brand{padding-left:17px}.sidebar .side-link{justify-content:center;padding:12px 7px}.sidebar .side-bottom{justify-content:center}.side-collapse{display:none}.topbar{padding:0 14px;height:57px}.main{padding:21px 13px}.page-title{font-size:19px}.search-box{min-width:100%;max-width:100%}.summary-grid{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}.detail-metrics{padding:15px;gap:8px}.detail-row{grid-template-columns:125px 1fr}.details-card,.response-card{padding:17px}.form-two{grid-template-columns:1fr}.topbar-right{gap:5px}}
+
+.demo-ribbon{position:fixed;bottom:12px;left:247px;pointer-events:none;z-index:22;font-weight:800;letter-spacing:1.1px;font-size:9px;color:#597e83;opacity:.8;background:rgba(255,255,255,.86);border:1px solid #d7e8e9;padding:6px 10px;border-radius:6px}@media(max-width:750px){.demo-ribbon{left:75px;bottom:8px}}.sidebar.collapsed~.workspace .demo-ribbon{left:90px}
+
+</style>
+  <style>
+/* Standalone offline AI Enhance chat widget. Namespaced to avoid collisions. */
+#ai-assistant-root{position:fixed;right:24px;bottom:22px;z-index:110;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#263848;pointer-events:none}
+#ai-assistant-root *{box-sizing:border-box}
+#ai-assistant-root button,#ai-assistant-root textarea{font:inherit}
+#ai-assistant-root button{cursor:pointer}
+#ai-assistant-root button:focus-visible,#ai-assistant-root textarea:focus-visible{outline:3px solid #80d8e8;outline-offset:2px}
+.ai-fab{pointer-events:auto;position:relative;display:flex;align-items:center;justify-content:center;gap:10px;min-width:57px;height:57px;padding:0 17px;border-radius:30px;color:#fff;background:linear-gradient(135deg,#087e8b 0%,#1654a1 100%);border:1px solid rgba(255,255,255,.35);box-shadow:0 12px 30px rgba(13,65,121,.3),0 3px 7px rgba(0,60,110,.15);float:right;transition:transform .18s,box-shadow .18s}
+.ai-fab:hover{transform:translateY(-3px);box-shadow:0 17px 35px rgba(13,65,121,.33)}
+.ai-fab:after{content:"";position:absolute;inset:-5px;border:1px solid rgba(27,172,193,.2);border-radius:38px;pointer-events:none}
+.ai-fab-label{font-size:13px;font-weight:760;letter-spacing:.2px}
+.ai-chat-window{pointer-events:auto;position:absolute;right:0;bottom:74px;display:flex;flex-direction:column;width:392px;height:min(605px,calc(100dvh - 118px));min-height:370px;overflow:hidden;border:1px solid #cfdfeb;border-radius:16px;background:#fff;box-shadow:0 28px 90px rgba(16,47,75,.22),0 5px 17px rgba(10,54,92,.12);}
+ .ai-chat-window.ai-chat-opening{animation:ai-open .22s cubic-bezier(.2,.8,.2,1) both}
+@keyframes ai-open{from{opacity:0;transform:translateY(15px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.ai-chat-header{display:flex;align-items:center;min-height:80px;padding:14px 15px;gap:11px;background:linear-gradient(108deg,#103e59,#126c83 69%,#258b9b);color:#fff}
+.ai-heading-mark{display:grid;place-items:center;flex:0 0 40px;width:40px;height:40px;border:1px solid rgba(255,255,255,.3);border-radius:12px;background:rgba(255,255,255,.13)}
+.ai-heading-text{min-width:0;flex:1}.ai-heading-name{font-size:16px;letter-spacing:-.2px;font-weight:780;white-space:nowrap}.ai-heading-name span{border:1px solid #83dedb;color:#c0fbf2;letter-spacing:1px;font-weight:800;font-size:9px;padding:3px 5px;border-radius:4px;margin-left:5px;vertical-align:2px}.ai-heading-subtitle{font-size:10px;color:#c2e5eb;margin-top:7px;white-space:nowrap}.ai-heading-subtitle i{display:inline-block;width:6px;height:6px;background:#6eefbb;border-radius:50%;vertical-align:1px;margin-right:4px}
+.ai-icon-btn{display:grid;place-items:center;width:26px;height:28px;flex:0 0 26px;border:0;background:transparent;border-radius:7px;color:#d4ecf4;padding:0}.ai-icon-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+.ai-context-bar{display:flex;align-items:center;gap:7px;min-height:38px;padding:0 15px;background:#f1f8f9;border-bottom:1px solid #e0ebee;color:#456875;font-size:10.5px;font-weight:650}.ai-context-bar>span:first-of-type{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ai-context-bar>svg{color:#158598;flex-shrink:0}.ai-local-chip{font-size:9px;font-weight:850;color:#0b7b7e;background:#daf5ec;border-radius:4px;margin-left:auto;padding:3px 6px;letter-spacing:.6px}
+.ai-messages{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:17px 13px 7px;background:radial-gradient(circle at top left,#f1fbfa 0%,#fff 55%);scrollbar-color:#bbd1da transparent;scrollbar-width:thin}
+.ai-message{display:flex;gap:8px;align-items:flex-start;margin-bottom:15px;max-width:100%}.ai-message-user{justify-content:flex-end}.ai-message-avatar{width:24px;height:24px;flex:0 0 24px;display:grid;place-items:center;border:1px solid #c8e7e9;border-radius:8px;background:#e5f5f5;color:#098692;margin-top:2px}.ai-message-wrap{max-width:calc(100% - 32px);min-width:0}.ai-bubble-text{padding:12px 13px;border-radius:4px 13px 13px 13px;background:#f3f6fa;border:1px solid #e5edf1;color:#365063;font-size:12px;line-height:1.6;overflow-wrap:anywhere;white-space:normal}.ai-bubble-text strong{color:#173d52;font-weight:760}.ai-message-user .ai-bubble-text{border-radius:13px 4px 13px 13px;background:#0e7f8c;color:#fff;border-color:#0e7f8c}.ai-message-user .ai-bubble-text strong{color:#fff}.ai-message-time{font-size:9px;color:#a1adb9;margin-top:5px;padding:0 5px}.ai-message-user .ai-message-time{text-align:right}
+.ai-insert{display:inline-flex;align-items:center;gap:5px;border:1px solid #99d3d2;background:#ecfaf7;color:#086c79;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px!important;font-weight:750!important}.ai-insert:hover{background:#dff5f1}.ai-insert:disabled{cursor:default;opacity:.6}
+.ai-bottom{border-top:1px solid #e4eef1;padding:12px 14px 11px;flex-shrink:0;background:#fff}.ai-quick-title{display:flex;align-items:center;gap:5px;font-size:9px;letter-spacing:1px;font-weight:850;color:#8193a4;margin-bottom:9px}.ai-quick-title svg{color:#2599a2}.ai-quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}.ai-chip{border:1px solid #d9e9ee;background:#f7fbfc;color:#356176;min-height:32px;padding:7px 9px;border-radius:8px;text-align:left;font-size:10.5px!important;font-weight:720!important;display:flex;align-items:center;gap:6px;line-height:1.25}.ai-chip svg{color:#1a94a1;flex-shrink:0}.ai-chip:hover{background:#eaf9f8;border-color:#9acfd0;color:#0b6e7a}
+.ai-input-wrap{display:flex;align-items:flex-end;border:1px solid #cbdde7;border-radius:11px;padding:5px;gap:7px;background:#fff;box-shadow:0 2px 9px rgba(38,92,108,.04)}.ai-input-wrap:focus-within{border-color:#28a1ae;box-shadow:0 0 0 3px rgba(12,133,147,.09)}.ai-input-wrap textarea{resize:none;overflow:auto;border:0;outline:0!important;background:transparent;min-width:0;flex:1;line-height:1.4;height:36px;min-height:36px;max-height:110px;padding:9px 6px;color:#233f51;font-size:11.5px}.ai-input-wrap textarea::placeholder{color:#96a7b2}.ai-send{display:grid;place-items:center;border:0;border-radius:9px;background:#087f8c;color:#fff;width:35px;height:35px;flex:0 0 35px}.ai-send:hover{background:#086674}.ai-send:disabled{background:#dfebed;color:#96b2b8;cursor:default}
+.ai-chat-footnote{margin:9px 0 0;color:#90a2af;font-size:9.4px;display:flex;align-items:center;justify-content:center;gap:5px}.ai-chat-footnote svg{color:#4d9ca0}
+.ai-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(max-width:550px){#ai-assistant-root{right:13px;bottom:13px}.ai-chat-window{width:min(392px,calc(100vw - 26px));bottom:67px;height:min(605px,calc(100dvh - 95px));min-height:300px}.ai-fab{height:54px;min-width:54px}.ai-chat-header{min-height:70px;padding:11px}.ai-messages{padding:12px}.ai-bottom{padding:9px 11px}}
+@media(prefers-reduced-motion:reduce){.ai-chat-window.ai-chat-opening{animation:none}.ai-fab{transition:none}}
+
+</style>
+  <style>
+/* Argon: cobalt enterprise palette (generic; no corporate trademarks). */
+:root{--blue:#0756ce;--darkblue:#073c9c;--deepblue:#09245c;--lightblue:#eaf2ff;--border:#d9e4f6;--ink:#182b4d;--muted:#6880a2;--bg:#f6f9ff;--shadow:0 12px 35px rgba(15,56,142,.12)}
+body{background:#f6f9ff}
+.sidebar{background:linear-gradient(164deg,#095ad4 0%,#073fbb 38%,#052b86 100%);box-shadow:4px 0 24px rgba(11,40,132,.12)}
+.brand-mark{border-color:#b6d8ff;background:rgba(255,255,255,.14)}.brand-mark:before{color:#fff;content:'A';font-size:20px}
+.brand-text{letter-spacing:1px}.brand-text small{letter-spacing:1.8px}
+.section-title{color:#a9c9ff}.side-link{color:#d2e0ff}.side-link:hover{background:rgba(255,255,255,.12)}
+.topbar{border-bottom-color:#dce6f7}.breadcrumbs strong,.page-title{color:#074eb4}
+.btn-primary,.chip.selected{background:#0756ce!important;border-color:#0756ce!important;color:white!important}
+.btn-primary:hover{background:#0645af!important}.chip:hover{border-color:#5592e8}.sidebar .side-bottom{background:rgba(6,33,104,.23)}
+.demo-ribbon{color:#2455a5;border-color:#d7e4ff;background:rgba(255,255,255,.92)}
+#ai-assistant-root .ai-fab{background:linear-gradient(130deg,#1475ed,#043ea5);box-shadow:0 12px 30px rgba(3,62,171,.27)}
+#ai-assistant-root .ai-fab:after{border-color:#77b5ff}
+#ai-assistant-root .ai-chat-header{background:linear-gradient(109deg,#092e86,#075bd2 75%,#1578e8)}
+#ai-assistant-root .ai-context-bar{background:#edf4ff;color:#3561a2;border-color:#d9e6fa}
+#ai-assistant-root .ai-messages{background:radial-gradient(circle at top left,#eff5ff 0%,#fff 60%)}
+#ai-assistant-root .ai-message-user .ai-bubble-text{background:#0863ca;border-color:#0863ca}
+#ai-assistant-root .ai-message-avatar{border-color:#c9dffa;background:#ecf4ff;color:#0a5bd0}
+#ai-assistant-root .ai-send{background:#0756ce}#ai-assistant-root .ai-send:disabled{background:#dfebf6}
+#ai-assistant-root .ai-chip svg,#ai-assistant-root .ai-quick-title svg,#ai-assistant-root .ai-context-bar>svg{color:#0756ce}
+#ai-assistant-root .ai-chip:hover{background:#edf4ff;color:#0644a0;border-color:#8db5f0}
+#ai-assistant-root .ai-input-wrap:focus-within{border-color:#428cf0;box-shadow:0 0 0 3px rgba(13,93,215,.1)}
+.argon-subscribe-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;margin-bottom:15px;background:linear-gradient(100deg,#eef5ff,#fff);border:1px solid #cfdef8;border-radius:9px;color:#27528e;font-size:12px}
+.argon-subscribe-banner strong{color:#073e9c}.argon-form-note{font-size:11px;line-height:1.6;color:#6880a2;margin:12px 0 0}
+.argon-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.argon-form-grid .form-field:first-child{grid-column:span 2}
+.argon-subscribe-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid #bad0f3;border-radius:7px;background:#fff;color:#064db5;font-weight:700;padding:8px 13px}
+.argon-subscribe-btn:hover{background:#e9f2ff}
+@media(max-width:650px){.argon-subscribe-banner{align-items:flex-start;flex-direction:column}.argon-form-grid{grid-template-columns:1fr}.argon-form-grid .form-field:first-child{grid-column:auto}}
+
+</style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+/* Argon Demo — all sample data is synthetic.
+   Offline HTML saves locally; the optional same-origin backend syncs demo findings and subscriptions. */
+(() => {
+  'use strict';
+  const $ = (s, root = document) => root.querySelector(s);
+  const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+  const escape = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const initials = s => (s || 'JL').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  const iconPaths = {
+    home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
+    patch:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M12 8v8"/>',
+    code:'<path d="m8 7-5 5 5 5m8-10 5 5-5 5M14 4l-4 16"/>',
+    config:'<path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2" fill="currentColor"/><circle cx="15" cy="12" r="2" fill="currentColor"/><circle cx="11" cy="17" r="2" fill="currentColor"/>',
+    security:'<path d="M3 13c4-6 7-6 10-3s5 3 8-1M3 19c4-6 7-6 10-3s5 3 8-1"/><circle cx="6" cy="6" r="2"/>',
+    iam:'<rect x="6" y="3" width="12" height="18" rx="2"/><path d="M10 8h4m-4 4h4m-4 4h4"/>',
+    folder:'<path d="M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 3-8 8-8s8 3 8 8"/>',
+    search:'<circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/>',
+    filter:'<path d="M3 5h18l-7 8v6l-4 2v-8z"/>',
+    edit:'<path d="m4 19 4-.8 11-11a2 2 0 0 0-3-3l-11 11z"/><path d="m14 6 4 4"/>',
+    columns:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m6-16v16"/>',
+    eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+    lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+    save:'<path d="M4 3h14l3 3v15H3V3z"/><rect x="7" y="3" width="9" height="6"/><path d="M7 21v-8h10v8"/>',
+    file:'<path d="M13 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V11z"/><path d="M13 3v8h8"/>',
+    chevron:'<path d="m9 18 6-6-6-6"/>',
+    back:'<path d="m15 18-6-6 6-6"/>',
+    bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>',
+    upload:'<path d="M12 16V3m-5 5 5-5 5 5M4 17v4h16v-4"/>',
+    check:'<path d="m4 12 5 5L20 6"/>',
+    x:'<path d="M5 5l14 14M19 5 5 19"/>',
+    download:'<path d="M12 3v13m-5-5 5 5 5-5M4 17v4h16v-4"/>',
+    shield:'<path d="M12 2 4 6v6c0 6 3 9 8 10 5-1 8-4 8-10V6z"/><path d="m9 12 2 2 4-4"/>',
+    grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+    info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/>',
+    paperclip:'<path d="m21 11-9 9a6 6 0 0 1-8-8L14 2a4 4 0 0 1 6 6L9 19a2 2 0 0 1-3-3l9-9"/>',
+    external:'<path d="M14 3h7v7m0-7-10 10"/><path d="M20 14v6H4V4h6"/>',
+    calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>'
+  };
+  const ic = (name, size=14) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconPaths[name] || iconPaths.info}</svg>`;
+
+  // All identifiers, findings, descriptions, paths and dates below are fictional.
+  // This app is an offline training mock-up; nothing is fetched from a backend.
+  const appFixtures = [
+    {app:'LAB-A',code:'DEMO-APP-001',name:'Aster Sample Portal',resource:'demo-aster-ui-service'},
+    {app:'LAB-B',code:'DEMO-APP-002',name:'Cobalt Message Queue',resource:'demo-cobalt-worker'},
+    {app:'LAB-C',code:'DEMO-APP-003',name:'Orion Notes Playground',resource:'demo-orion-notes-api'},
+    {app:'LAB-D',code:'DEMO-APP-004',name:'Nova Sample Catalog',resource:'demo-nova-catalog-api'},
+    {app:'LAB-E',code:'DEMO-APP-005',name:'Pixel Reports Sandbox',resource:'demo-pixel-reports-batch'}
+  ];
+  const sampleFindings = [
+    ['Example missing object-owner check in a sample API','Improper Access Control (CWE-284)',7.6],
+    ['Demo search endpoint accepts unsanitized test input','Input Validation (CWE-20)',8.1],
+    ['Placeholder configuration contains a training-only secret','Hardcoded Credentials (CWE-798)',8.8],
+    ['Mock TLS client skips certificate checks','Certificate Validation (CWE-295)',7.4],
+    ['Example expression parser needs input validation','Expression Language Injection (CWE-917)',9.9],
+    ['Sample session handler fails an authorization check','Improper Authentication (CWE-287)',9.8],
+    ['Synthetic settings file has a sample key string','Use of Hard-coded Key (CWE-321)',8.2],
+    ['Demo shared state leaks across mock request contexts','Improper Isolation (CWE-653)',8.2],
+    ['Example SQL builder uses string concatenation','SQL Injection (CWE-89)',9.0],
+    ['Training-only URL input permits internal mock redirects','Server-Side Request Forgery (CWE-918)',8.5],
+    ['Mock user role is loaded from an untrusted form value','Improper Authorization (CWE-285)',8.8],
+    ['Example document listing omits a permission filter','Missing Authorization (CWE-862)',7.5],
+    ['Placeholder login flow does not invalidate stale tokens','Improper Authentication (CWE-287)',8.0],
+    ['Sample application emits excess diagnostic information','Information Exposure (CWE-200)',6.5],
+    ['Demo file-import routine requires path normalization','Path Traversal (CWE-22)',8.6],
+    ['Example multi-user notes view lacks mock tenant scope','Improper Access Control (CWE-284)',9.1]
+  ];
+  const simpleUuid = i => {
+    const h = (('00000000'+(i*2971+2837).toString(16)).slice(-8) + '7e31' + '4a29' + '8b40' + ('000000000000'+(i*1121+97231).toString(16)).slice(-12));
+    return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
+  };
+  const baseRows = Array.from({length:234}, (_,i) => {
+    const app=appFixtures[i%appFixtures.length];
+    const finding=sampleFindings[i%sampleFindings.length];
+    const score = i<sampleFindings.length?finding[2]:Number((6.4+(i%36)/10).toFixed(1));
+    const status=i%9===0?'In Progress':i%23===0?'Resolved':'Not Started';
+    return {
+      id:`FND-${String(i+1).padStart(5,'0')}`,uuid:simpleUuid(i+1),priority:i%21===0&&i>10?'P2':'P3',
+      risk:score>=9?'CRITICAL':score<7?'MEDIUM':'HIGH',
+      app:app.app,application:app.code,name:finding[0],resource:app.resource,score,cve:'N/A',
+      category:finding[1],business:i%3===0?'Training Lab':'Demo Engineering',
+      status,closed:status==='Resolved'?'Closed':'Open',locked:i>10&&i%29===0,
+      exposure:'Internal',reviewed:'No',severity:'No',comment:'',planned:'2026-12-15',actual:'',
+      age:5+i%28,attachments:[]
+    };
+  });
+  let edits={};try{edits=JSON.parse(localStorage.getItem('argon-v1-local-edits')||'{}')}catch(e){}
+  const rows=baseRows.map(r=>({...r,...(edits[r.id]||{})}));
+  const columns=[
+    {id:'priority',label:'PRIORITY',width:52},
+    {id:'risk',label:'RISK RATING',width:56},
+    {id:'app',label:'DEMO APP GROUP',width:49},
+    {id:'application',label:'DEMO APP CODE',width:89},
+    {id:'name',label:'VULNERABILITY NAME',width:174},
+    {id:'resource',label:'DEMO RESOURCE',width:118},
+    {id:'score',label:'CVSS 3.1 SCORE',width:62},
+    {id:'cve',label:'CVE',width:50},
+    {id:'category',label:'CATEGORY',width:217},
+    {id:'business',label:'BUSINESS UNIT',width:76},
+    {id:'status',label:'STATUS',width:91},
+    {id:'closed',label:'CLOSED/OPEN',width:82}
+  ];
+  const navigation=[
+    ['Home','home'],['Patch Findings','patch'],['Code Findings','code'],['Config Findings','config'],['Argon Findings','shield'],['Identity Reviews','iam'],['Cases','folder'],['Recommended Cases','shield','faint'],['Closed Exceptions','lock','faint'],['Campaigns','grid','faint'],['Supply Chain','shield','faint'],['My Profile','user']
+  ];
+  const state={nav:'Argon Findings',view:'list',selectedId:null,sidebarCollapsed:false,filterText:'',filterApp:'All Apps',draftText:'',draftApp:'All Apps',page:1,pageSize:100,sort:'',sortAsc:true,selected:new Set(),showClosed:false,showLocked:false,columnPreset:'Custom',visibleCols:new Set(columns.map(c=>c.id)),filtersOpen:false,filterRisk:'Any risk',filterStatus:'Any status',modal:null,toast:'',attachment:[],showAlert:false};
+  const apiEnabled = location.protocol === 'http:' || location.protocol === 'https:';
+  let backendReady = false;
+  let toastTimer;
+  function notify(message){state.toast=message;renderToast();clearTimeout(toastTimer);toastTimer=setTimeout(()=>{state.toast='';renderToast()},3300)}
+  function persist(row){if(apiEnabled)fetch(`/api/findings/${encodeURIComponent(row.id)}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:row.status,comment:row.comment,exposure:row.exposure,reviewed:row.reviewed,severity:row.severity,planned:row.planned,actual:row.actual})}).catch(()=>notify('Server unavailable; changes saved in browser only.'));edits[row.id]={...(edits[row.id]||{}),status:row.status,closed:row.closed,exposure:row.exposure,reviewed:row.reviewed,severity:row.severity,comment:row.comment,planned:row.planned,actual:row.actual,attachments:row.attachments};try{localStorage.setItem('argon-v1-local-edits',JSON.stringify(edits))}catch(e){}}
+  function navSide(){return `<aside class="sidebar ${state.sidebarCollapsed?'collapsed':''}">
+    <div class="brand"><div class="brand-mark"></div><div class="brand-text">ARGON<br><small>LABS</small></div></div>
+    <button class="side-collapse" data-action="collapse">${state.sidebarCollapsed?ic('chevron',11):ic('back',11)}</button>
+    <div class="section-title">Overview</div>
+    <nav class="side-nav">${navigation.map(([label,name,extra],i)=>`${i===6?'<div class="section-title" style="padding-left:13px">Workflows</div>':''}${i===11?'<div class="section-title" style="padding-left:13px">Account</div>':''}<button class="side-link ${state.nav===label?'active':''} ${extra?'sidebar-faint':''}" data-nav="${escape(label)}" title="${escape(label)}"><div class="nav-icon">${ic(name,16)}</div><span>${escape(label)}</span></button>`).join('')}</nav>
+    <div class="side-bottom"><div class="avatar">AM</div><div class="identity"><strong>Alex Morgan (Demo)</strong><small>Training Account<br>Offline Demo</small></div></div></aside>`}
+  function topBar(){return `<header class="topbar"><div class="breadcrumbs"><strong>Argon Workspace</strong><span class="sep">›</span>${state.view==='detail'?'<a href="#findings" data-action="go-list">Argon Findings</a><span class="sep">›</span>Finding Detail':escape(state.nav)}</div><div class="topbar-right"><span class="small-note">${backendReady?'API CONNECTED · SYNTHETIC':'FICTIONAL DEMO'}</span><button class="topbar-bell" data-action="alerts" aria-label="Notifications">${ic('bell',18)}</button><div class="top-avatar">AM</div></div></header>`}
+  const btn = (txt, action, variant='btn-sm', ico='')=>`<button class="btn ${variant}" data-action="${action}">${ico?ic(ico,12):''}${txt}</button>`;
+  function filterContent(){return `<div class="dropdown right" id="filters-popup"><h4>Column Filters</h4><label>Risk rating</label><select id="riskFilter" class="select" style="height:32px;margin-bottom:14px"><option ${state.filterRisk==='Any risk'?'selected':''}>Any risk</option><option ${state.filterRisk==='HIGH'?'selected':''}>HIGH</option><option ${state.filterRisk==='MEDIUM'?'selected':''}>MEDIUM</option><option ${state.filterRisk==='CRITICAL'?'selected':''}>CRITICAL</option></select><label>Status</label><select id="statusFilter" class="select" style="height:32px;margin-bottom:14px"><option ${state.filterStatus==='Any status'?'selected':''}>Any status</option><option ${state.filterStatus==='Not Started'?'selected':''}>Not Started</option><option ${state.filterStatus==='In Progress'?'selected':''}>In Progress</option><option ${state.filterStatus==='Resolved'?'selected':''}>Resolved</option></select><div class="dropdown-actions"><button data-action="reset-filters" class="btn btn-sm">Reset</button><button data-action="apply-filters" class="btn btn-primary btn-sm">Apply</button></div></div>`}
+  function filteredRows(){let list=rows.filter(r=>(state.showClosed||r.closed==='Open')&&(state.showLocked||!r.locked));if(state.filterText){let q=state.filterText.toLowerCase();list=list.filter(r=>[r.id,r.uuid,r.app,r.application,r.name,r.resource,r.category,r.cve].some(v=>String(v).toLowerCase().includes(q)))}if(state.filterApp!=='All Apps')list=list.filter(r=>r.app===state.filterApp);if(state.filterRisk!=='Any risk')list=list.filter(r=>r.risk===state.filterRisk);if(state.filterStatus!=='Any status')list=list.filter(r=>r.status===state.filterStatus);if(state.sort){list.sort((a,b)=>{let av=a[state.sort],bv=b[state.sort];let delta=typeof av==='number' ? av-bv:String(av).localeCompare(String(bv));return state.sortAsc?delta:-delta})}return list}
+  function pageInfo(list){let total=Math.max(1,Math.ceil(list.length/state.pageSize));if(state.page>total)state.page=total;return {total,paged:list.slice((state.page-1)*state.pageSize,state.page*state.pageSize)}}
+  function tableCell(r,id){let v=r[id];if(id==='risk')return `<span class="${v==='CRITICAL'?'risk-critical':'risk-high'}">${escape(v)}</span>`;if(id==='category')return `<span class="cat-tag ${r.score>=9?'indigo':r.score<=7.5?'gray':''}" title="${escape(v)}">${escape(v)}</span>`;if(id==='status')return `<span class="status ${v==='In Progress'?'progress':v==='Resolved'?'fixed':''}"><span class="status-dot"></span>${escape(v)}</span>`;if(id==='cve')return escape(v==='[]'?'[]':v);if(id==='score')return Number(v).toFixed(1);return `<span title="${escape(v)}">${escape(v||'—')}</span>`}
+  function listView(){let list=filteredRows();const {total,paged}=pageInfo(list), apps=['All Apps',...new Set(rows.map(r=>r.app))];let pageTxt=`Page ${state.page} of ${total} · ${list.length} total findings`;
+    return `<h1 class="page-title">Argon Findings</h1><p class="page-subtitle">Illustrative security findings across invented demo apps. Filter, sort, and turn any row into a tracked remediation case.</p>
+    <div class="argon-subscribe-banner"><span><strong>Argon Digest</strong> · Get a daily or weekly summary of synthetic vulnerability findings.</span><button class="argon-subscribe-btn" data-action="subscribe">✉ Subscribe to findings</button></div><div class="panel search-panel"><div class="search-row"><div class="search-box">${ic('search',14)}<input id="keyword" type="search" placeholder="Search UUID / App Code / CVE..." value="${escape(state.draftText)}" autocomplete="off" aria-label="Search findings" /></div><select class="field-select" id="appFilter">${apps.map(a=>`<option ${state.draftApp===a?'selected':''}>${a}</option>`).join('')}</select>${btn('Apply','apply-search','btn-primary btn-sm')}${btn('Clear','clear-search','btn-sm')}</div></div>
+    <div class="toolbar"><div class="toolbar-group"><span class="small-note">${ic('columns',11)} Col:</span><div class="chips"><button class="chip ${state.columnPreset==='Default'?'selected':''}" data-action="default-columns">Default (10)</button><button class="chip ${state.columnPreset==='Custom'?'selected':''}" data-action="custom-columns">Custom (12)⌄</button><button class="chip ${state.columnPreset==='All'?'selected':''}" data-action="all-columns">All (12)</button></div><span class="pill-count">${state.visibleCols.size}/12</span></div><div class="toolbar-group"><div class="dropdown-wrap">${btn('Column Filters','toggle-filters','btn-sm','filter')}${state.filtersOpen?filterContent():''}</div>${btn('Edit','edit-selected','btn-sm','edit')}${btn('Bulk Update','bulk-update','btn-sm','columns')}${btn(state.showClosed?'Hide Closed':'Show Closed','toggle-closed','btn-sm', 'eye')}${btn(state.showLocked?'Hide Locked':'Show Locked','toggle-locked','btn-sm','lock')}${btn('Email Digest','subscribe','btn-sm','bell')}</div></div>
+    <div class="pagination-top">${btn('‹ Prev','prev','btn-sm')}${btn('Next ›','next','btn-sm')}<span>${pageTxt}</span></div>
+    <section class="panel table-panel"><div class="table-scroll"><table class="findings-table"><colgroup><col style="width:36px"/>${columns.filter(c=>state.visibleCols.has(c.id)).map(c=>`<col style="width:${c.width}px"/>`).join('')}</colgroup><thead><tr><th><input id="checkAll" type="checkbox" aria-label="Select all visible rows" ${paged.length>0 && paged.every(r=>state.selected.has(r.id))?'checked':''}></th>${columns.filter(c=>state.visibleCols.has(c.id)).map(c=>`<th class="sortable" data-sort="${c.id}">${escape(c.label)}<span class="sort-marker">${state.sort===c.id?(state.sortAsc?'▲':'▼'):'↕'}</span></th>`).join('')}</tr></thead><tbody>${paged.map(r=>`<tr data-row-id="${r.id}" class="${state.selected.has(r.id)?'selected-row':''}"><td><input type="checkbox" class="row-check" value="${r.id}" ${state.selected.has(r.id)?'checked':''} aria-label="Select ${r.id}" /></td>${columns.filter(c=>state.visibleCols.has(c.id)).map(c=>`<td>${tableCell(r,c.id)}</td>`).join('')}</tr>`).join('')}</tbody></table>${!paged.length?'<div class="empty-state"><h3>No findings found</h3>Try changing the search or column filters.</div>':''}</div><div class="table-bottom"><span>Showing ${paged.length?((state.page-1)*state.pageSize+1):0}–${Math.min(state.page*state.pageSize,list.length)} of ${list.length} findings</span><div class="pagination-top">${btn('‹','prev','btn-sm')}${state.page} / ${total}${btn('›','next','btn-sm')}<select class="field-select" id="pageSize" style="height:30px;min-width:92px;margin-left:8px"><option value="25" ${state.pageSize===25?'selected':''}>25 / page</option><option value="50" ${state.pageSize===50?'selected':''}>50 / page</option><option value="100" ${state.pageSize===100?'selected':''}>100 / page</option></select></div></div></section><p class="demo-banner">100% synthetic sample data · Synthetic data · Email subscriptions require the optional local backend.</p>`
+  }
+  const detailItems=(r)=>[
+    ['UUID',r.uuid],['Demo Application',appFixtures.find(a=>a.app===r.app)?.name||'Demo App'],['Demo App Code',r.application],['Closed/Open',r.closed],['Vulnerability Name',r.name],['Demo Resource Name',r.resource],['Resource Version','v1.0-demo'],['Resource Type','finding'],['CVSS 3.1 Score',r.score.toFixed(1)],['CVSS 3.1 Vector','CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:L/A:L'],['CVE',r.cve],['CWEs',r.category.match(/CWE-\d+/)?.[0]||'—'],['Priority 2','—'],['Risk Rating 2','—'],['Category',r.category],['Exploitability',`Attacker with a valid account may exploit the described behavior in ${r.resource}.`],['Novel','yes'],['Confidence','9.0'],['Scan Status','—'],['Business Unit',r.business||'—'],['OSS','—'],['Attack Surface','authenticated'],['Preconditions','Attacker holds an authenticated session with the application’s standard user role.'],['SLA Breached','No'],['SLA Breached Days','—'],['Aging (Days)',r.age],['Scan Date','2026-09-01 09:00:00'],['File Name / Taxonomy','application security scanning'],['Created At','2026-09-01 09:00:00'],['Last Updated','2026-10-01 10:00:00'],['Original Signal Time','2026-09-01 09:00:00'],['Source File','src/demo/java/org/example/sandbox/ExampleService.java'],['Target Status','Open'],['Target Severity','high'],['Target Technology','java'],['Owner / Assignment','Application security team'],['Latest Scan Status','Passed / reviewed'],['Original Confidence','High'],['Remediation Recommendation','Implement authorization and ownership validation, add regression tests, and review affected endpoints.']
+  ];
+  function detailView(){const r=rows.find(x=>x.id===state.selectedId)||rows[0];return `<button class="back-link" data-action="go-list">${ic('back',14)} Back to Argon Findings</button><div class="detail-header"><div><h1 class="page-title">Argon Finding Detail</h1><p class="page-subtitle">View and update remediation status for a sample finding.</p></div><span class="chip" style="background:#fff">${escape(r.id)}</span></div>
+  <div class="panel detail-metrics"><div><div class="metric-label">Priority</div><div class="metric-value">${escape(r.priority)}</div></div><div><div class="metric-label">Risk Rating</div><div class="metric-value">${escape(r.risk)}</div></div><div><div class="metric-label">Aging (Days)</div><div class="metric-value">${r.age}</div></div></div>
+  <div class="detail-columns"><section class="panel details-card"><h2 class="card-head">${ic('shield',17)} Finding Information</h2>${detailItems(r).slice(0,21).map(([key,value])=>`<div class="detail-row"><div class="key">${escape(key)}</div><div class="value">${escape(value)}</div></div>`).join('')}<h3 class="subsection">Code Line</h3><div class="prose">src/demo/java/org/example/sandbox/${escape(r.app)}Service.java:142</div><h3 class="subsection">Impact</h3><div class="prose">${escape(r.name)}. An authenticated actor may be able to perform an action that falls outside their intended scope. The issue should be verified and remediated by the application owner.</div><h3 class="subsection">Description</h3><div class="prose">The security analysis detected a potentially exploitable weakness in the specified application resource. Under certain conditions, user-controlled values may cross an authorization or validation boundary. This can lead to unexpected access to restricted information or application functions.\n\nThe finding should be confirmed by testing the affected execution path and by reviewing the authorization and input validation implemented around the impacted operation.\n\nThis text is illustrative demo content, not an actual security assessment.</div><h3 class="subsection">Mitigation</h3><div class="prose">Validate that the current principal is authorized to access each referenced object before processing it. Apply centralized access-control checks, minimize privileges, and add automated regression tests. Evaluate any other endpoints that use the same patterns.</div><h3 class="subsection">Recommendation</h3><div class="prose">Prioritize remediation according to the assessed risk, the reachability of the affected code path, and the application’s exposure. Track the fix, its validation evidence, and the targeted closure date.</div><h3 class="subsection">Additional Attributes</h3>${detailItems(r).slice(21).map(([key,value])=>`<div class="detail-row"><div class="key">${escape(key)}</div><div class="value">${escape(value)}</div></div>`).join('')}</section>
+  <section class="panel response-card"><h2 class="card-head">${ic('edit',17)} App Owner Response</h2><div class="form-field"><label for="responseStatus">Status ${ic('info',12)}</label><select class="select" id="responseStatus">${['Not Started','In Progress','Resolved','Risk Accepted','False Positive'].map(v=>`<option ${r.status===v?'selected':''}>${v}</option>`).join('')}</select><p id="statusHelp" class="hint">${r.status==='In Progress'?'The application team is evaluating and/or designing and implementing a fix.':'Select the current remediation state of the finding.'}</p></div>
+  <div class="form-field"><label for="responseExposure">Exposure *</label><select id="responseExposure" class="select">${['Internal','External','Both','Unknown'].map(v=>`<option ${r.exposure===v?'selected':''}>${v}</option>`).join('')}</select></div>
+  <div class="form-field"><label for="responseReviewed">Reviewed</label><select id="responseReviewed" class="select"><option ${r.reviewed==='No'?'selected':''}>No</option><option ${r.reviewed==='Yes'?'selected':''}>Yes</option></select></div>
+  <div class="form-field"><label for="responseSeverity">Agree on Severity</label><select id="responseSeverity" class="select"><option ${r.severity==='No'?'selected':''}>No</option><option ${r.severity==='Yes'?'selected':''}>Yes</option><option ${r.severity==='Needs Review'?'selected':''}>Needs Review</option></select></div>
+  <div class="form-field"><label for="responseComment">Comments / Evidence</label><textarea class="textarea" id="responseComment" placeholder="Add comments or supporting evidence...">${escape(r.comment)}</textarea></div>
+  <div class="form-field"><label>${ic('paperclip',14)} Attachments</label><div class="upload-box"><div>Attach evidence files (screenshots, docs, logs, images).<br><span id="file-names">${r.attachments.length?escape(r.attachments.join(', ')):'Maximum 25 MB per file · local demo only'}</span></div><label class="btn btn-primary btn-sm" for="attachFile" style="color:white;white-space:nowrap;margin:0">${ic('upload',12)} Upload</label><input id="attachFile" type="file" multiple accept="image/*,.txt,.log,.csv,.doc,.docx,.pdf" /></div></div>
+  <div class="form-two"><div class="form-field"><label for="plannedDate">Planned Remediation Date</label><input class="input" id="plannedDate" type="date" value="${escape(r.planned)}" /></div><div class="form-field"><label for="actualDate">Actual Closure Date</label><input class="input" id="actualDate" type="date" value="${escape(r.actual)}" /></div></div>
+  <div class="form-footer">${btn('Save','save-detail','btn-primary','save')}${btn('Cancel','go-list')}${btn('Create Case','create-case','btn','file')}</div></section></div><p class="demo-banner">Demo · Form saves are local; they also sync when the optional backend is running.</p>`}
+  function overviewView(){let statuses=['Not Started','In Progress','Resolved'];return `<h1 class="page-title">Sandbox Overview</h1><p class="page-subtitle">Security findings and remediation activity across your application portfolio.</p><div class="summary-grid"><div class="panel summary-card"><div class="label">Total Findings</div><div class="number">234</div><div class="meta">Demo scans</div></div><div class="panel summary-card"><div class="label">Open Findings</div><div class="number">216</div><div class="meta">In application scope</div></div><div class="panel summary-card"><div class="label">In Progress</div><div class="number">46</div><div class="meta">Remediation underway</div></div><div class="panel summary-card"><div class="label">Critical Risk</div><div class="number">32</div><div class="meta">Requires attention</div></div></div><div class="dashboard-grid"><div class="panel dashboard-card"><h2 class="card-head">Findings by status</h2>${statuses.map((s,i)=>`<div class="bar-row"><span class="bar-label">${s}</span><div class="bar-track"><div class="bar-fill" style="width:${[80,34,13][i]}%"></div></div><span class="bar-num">${[170,46,18][i]}</span></div>`).join('')}<button class="btn btn-primary" data-action="go-list">View Argon Findings ${ic('chevron',12)}</button></div><div class="panel dashboard-card"><h2 class="card-head">Recent Activity</h2>${rows.slice(0,5).map(r=>`<div class="activity"><div class="activity-bubble"></div><div><strong>${escape(r.application)} · ${escape(r.category)}</strong><span>${escape(r.status)} · ${escape(r.id)}</span></div></div>`).join('')}</div></div>`}
+  function placeholderView(){return `<div class="panel placeholder-view">${ic('folder',45)}<h2>${escape(state.nav)}</h2><p>This module is represented by a demo placeholder.<br>The Argon Findings list and its remediation detail workflow are interactive.</p><button class="btn btn-primary" data-action="go-list">Open Argon Findings ${ic('chevron',14)}</button></div>`}
+  function modalContent(){if(!state.modal)return '';const close=`<button class="modal-close" data-action="close-modal" aria-label="Close">×</button>`;
+    if(state.modal==='columns')return `<div class="modal-layer" data-action="dismiss-modal"><div class="modal"><div class="modal-top"><h2 class="modal-title">Customize Table Columns</h2>${close}</div><div class="modal-content"><p style="margin-top:0;color:#718198;font-size:12px">Choose the fields shown in the findings table.</p><div class="check-grid">${columns.map(c=>`<label><input class="column-check" value="${c.id}" type="checkbox" ${state.visibleCols.has(c.id)?'checked':''}>${escape(c.label.replace(/\bCVSS 3.1\b/,'CVSS'))}</label>`).join('')}</div></div><div class="modal-footer">${btn('Cancel','close-modal')}${btn('Apply Columns','apply-columns','btn-primary')}</div></div></div>`;
+    if(state.modal==='bulk')return `<div class="modal-layer" data-action="dismiss-modal"><div class="modal"><div class="modal-top"><h2 class="modal-title">Bulk Update Findings</h2>${close}</div><div class="modal-content"><p class="page-subtitle">Update ${state.selected.size} selected finding(s).</p><div class="form-field"><label for="bulkStatus">Remediation status</label><select class="select" id="bulkStatus">${['Not Started','In Progress','Resolved','Risk Accepted','False Positive'].map(s=>`<option>${s}</option>`).join('')}</select></div><div class="form-field"><label for="bulkComment">Optional comment</label><textarea class="textarea" id="bulkComment" placeholder="Comment for selected findings..."></textarea></div></div><div class="modal-footer">${btn('Cancel','close-modal')}${btn('Save Changes','apply-bulk','btn-primary','save')}</div></div></div>`;
+    if(state.modal==='case')return `<div class="modal-layer" data-action="dismiss-modal"><div class="modal"><div class="modal-top"><h2 class="modal-title">Create Remediation Case</h2>${close}</div><div class="modal-content"><p class="page-subtitle">Create a local mock case linked to ${escape(state.selectedId||'selected finding')}.</p><div class="form-field"><label for="caseTitle">Case Title</label><input class="input" id="caseTitle" value="Remediate ${escape(state.selectedId||'selected vulnerabilities')}" /></div><div class="form-field"><label for="caseOwner">Assigned Team</label><select class="select" id="caseOwner"><option>Application Owner</option><option>Application Security</option><option>Engineering</option></select></div><div class="form-field"><label for="casePriority">Priority</label><select class="select" id="casePriority"><option>High</option><option>Critical</option><option>Medium</option></select></div><div class="form-field"><label for="caseDescription">Description</label><textarea class="textarea" id="caseDescription">Review and remediate the associated security finding.</textarea></div></div><div class="modal-footer">${btn('Cancel','close-modal')}${btn('Create Case','submit-case','btn-primary','file')}</div></div></div>`;
+    if(state.modal==='subscribe')return `<div class="modal-layer" data-action="dismiss-modal"><div class="modal"><div class="modal-top"><h2 class="modal-title">✉ Argon · Email Digest Subscription</h2>${close}</div><div class="modal-content"><p class="page-subtitle">Choose which synthetic findings to receive in a digest. Confirmation is required before any subscription becomes active.</p><div class="argon-form-grid"><div class="form-field"><label for="subEmail">Email address *</label><input class="input" id="subEmail" type="email" maxlength="254" autocomplete="email" placeholder="demo@example.com" required /></div><div class="form-field"><label for="subFrequency">Delivery frequency</label><select class="select" id="subFrequency"><option value="DAILY">Daily (08:00 UTC)</option><option value="WEEKLY">Weekly (Monday)</option></select></div><div class="form-field"><label for="subRisk">Minimum risk rating</label><select class="select" id="subRisk"><option value="HIGH">High and Critical</option><option value="CRITICAL">Critical only</option><option value="MEDIUM">Medium and above</option></select></div><div class="form-field"><label for="subApp">Application scope</label><select class="select" id="subApp"><option value="">All demo applications</option>${appFixtures.map(a=>`<option value="${escape(a.code)}">${escape(a.name)}</option>`).join('')}</select></div></div><p class="argon-form-note">🔒 Synthetic content only. The standalone HTML does not send emails. With the Spring Boot backend running, requests stay on the same origin and messages are saved to a local outbox by default (SMTP disabled).</p></div><div class="modal-footer">${btn('Cancel','close-modal')}${btn('Create Subscription','submit-subscription','btn-primary','bell')}</div></div></div>`;
+    if(state.modal==='subscription-confirm')return `<div class="modal-layer"><div class="modal"><div class="modal-top"><h2 class="modal-title">Confirm your Argon subscription</h2>${close}</div><div class="modal-content"><p class="page-subtitle">Activate this synthetic-data digest subscription?</p></div><div class="modal-footer">${btn('Cancel','close-modal')}${btn('Confirm subscription','confirm-subscription','btn-primary')}</div></div></div>`;
+    if(state.modal==='subscription-unsubscribe')return `<div class="modal-layer"><div class="modal"><div class="modal-top"><h2 class="modal-title">Unsubscribe from Argon</h2>${close}</div><div class="modal-content"><p class="page-subtitle">Stop receiving this synthetic-data digest?</p></div><div class="modal-footer">${btn('Cancel','close-modal')}${btn('Unsubscribe','unsubscribe','btn-primary')}</div></div></div>`;
+    if(state.modal==='alerts')return `<div class="modal-layer" data-action="dismiss-modal"><div class="modal"><div class="modal-top"><h2 class="modal-title">Notifications</h2>${close}</div><div class="modal-content"><p style="color:#718198">No new notifications in the local demo.</p></div><div class="modal-footer">${btn('Close','close-modal')}</div></div></div>`;return '';
+  }
+  function render(){ $('#app').innerHTML=`<div class="app-shell">${navSide()}<div class="workspace">${topBar()}<main class="main">${state.nav==='Home'?overviewView():state.nav==='Argon Findings'?(state.view==='detail'?detailView():listView()):placeholderView()}</main></div></div>${modalContent()}<div class="demo-ribbon">SYNTHETIC DATA · TRAINING ONLY</div><div id="toast-container"></div>`;renderToast()}
+  function renderToast(){const container=$('#toast-container');if(container)container.innerHTML=state.toast?`<div class="toast">${ic('check',20)}<span>${escape(state.toast)}</span></div>`:''}
+  function goList(){state.nav='Argon Findings';state.view='list';state.selectedId=null;state.modal=null;history.replaceState(null,'','#findings');render();window.scrollTo({top:0,behavior:'instant'})}
+  function goDetail(id){state.nav='Argon Findings';state.view='detail';state.selectedId=id;state.modal=null;history.pushState(null,'',`#finding-${id}`);render();window.scrollTo({top:0,behavior:'instant'})}
+  function collectDetail(){let r=rows.find(r=>r.id===state.selectedId);if(!r)return null;r.status=$('#responseStatus').value;r.exposure=$('#responseExposure').value;r.reviewed=$('#responseReviewed').value;r.severity=$('#responseSeverity').value;r.comment=$('#responseComment').value;r.planned=$('#plannedDate').value;r.actual=$('#actualDate').value;r.attachments=[...new Set([...(r.attachments||[]),...state.attachment])];if(r.status==='Resolved')r.closed='Closed';else if(r.closed==='Closed'&&r.status!=='Resolved')r.closed='Open';persist(r);state.attachment=[];return r}
+  function handleAction(action,target){switch(action){
+    case'collapse':state.sidebarCollapsed=!state.sidebarCollapsed;render();break;
+    case'go-list':goList();break;
+    case'alerts':state.modal='alerts';render();break;
+    case'subscribe':state.modal='subscribe';render();break;
+    case'submit-subscription':{
+      const email=($('#subEmail')?.value||'').trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){notify('Enter a valid email address.');break}
+      if(!apiEnabled){notify('Start the Spring Boot backend to subscribe; offline HTML is read-only.');break}
+      const body={email,frequency:$('#subFrequency').value,minRisk:$('#subRisk').value,appCode:$('#subApp').value};
+      fetch('/api/subscriptions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+        .then(async res=>{if(!res.ok)throw Error((await res.json().catch(()=>({}))).message||`HTTP ${res.status}`);state.modal=null;render();notify('Subscription requested. Check the configured email or local outbox to confirm.');})
+        .catch(err=>notify('Subscription failed: '+err.message));
+      break}
+    case'confirm-subscription': case'unsubscribe':{
+      const token=state.subscriptionToken;const endpoint=action==='confirm-subscription'?'confirm':'unsubscribe';
+      if(!token){notify('Missing token.');break}
+      fetch(`/api/subscriptions/${endpoint}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})})
+        .then(async res=>{if(!res.ok)throw Error((await res.json().catch(()=>({}))).message||`HTTP ${res.status}`);history.replaceState(null,'',location.pathname);state.modal=null;state.subscriptionToken=null;render();notify(endpoint==='confirm'?'Subscription confirmed.':'Subscription cancelled.');})
+        .catch(err=>notify('Unable to update subscription: '+err.message));
+      break}
+
+    case'apply-search':state.filterText=($('#keyword')?.value||'').trim();state.filterApp=$('#appFilter')?.value||'All Apps';state.draftText=state.filterText;state.draftApp=state.filterApp;state.page=1;render();break;
+    case'clear-search':state.filterText=state.draftText='';state.filterApp=state.draftApp='All Apps';state.filterRisk='Any risk';state.filterStatus='Any status';state.page=1;render();break;
+    case'prev':if(state.page>1){state.page--;render()}break;
+    case'next':if(state.page<Math.ceil(filteredRows().length/state.pageSize)){state.page++;render()}break;
+    case'toggle-filters':state.filtersOpen=!state.filtersOpen;render();break;
+    case'apply-filters':state.filterRisk=$('#riskFilter')?.value||'Any risk';state.filterStatus=$('#statusFilter')?.value||'Any status';state.page=1;state.filtersOpen=false;render();break;
+    case'reset-filters':state.filterRisk='Any risk';state.filterStatus='Any status';state.page=1;state.filtersOpen=false;render();break;
+    case'toggle-closed':state.showClosed=!state.showClosed;state.page=1;render();break;
+    case'toggle-locked':state.showLocked=!state.showLocked;state.page=1;render();break;
+    case'default-columns':state.columnPreset='Default';state.visibleCols=new Set(columns.filter(c=>!['business','cve'].includes(c.id)).map(c=>c.id));render();break;
+    case'custom-columns':state.modal='columns';render();break;
+    case'all-columns':state.columnPreset='All';state.visibleCols=new Set(columns.map(c=>c.id));render();break;
+    case'apply-columns':{const cs=$$('.column-check:checked').map(n=>n.value);if(!cs.length){notify('Select at least one column.');break}state.visibleCols=new Set(cs);state.columnPreset='Custom';state.modal=null;render();notify('Column preferences applied.');break}
+    case'edit-selected':if(state.selected.size===1){goDetail([...state.selected][0])}else if(state.selected.size>1){state.modal='bulk';render()}else notify('Select a finding row to edit.');break;
+    case'bulk-update':if(!state.selected.size){notify('Select one or more findings to update.');break}state.modal='bulk';render();break;
+    case'apply-bulk':{let s=$('#bulkStatus').value,comment=$('#bulkComment').value.trim();for(let id of state.selected){let r=rows.find(r=>r.id===id);if(r){r.status=s;r.closed=s==='Resolved'?'Closed':'Open';if(comment)r.comment=[r.comment,comment].filter(Boolean).join('\n');persist(r)}}let n=state.selected.size;state.selected.clear();state.modal=null;render();notify(`Updated ${n} finding(s) successfully.`);break}
+    case'save-detail':{const r=collectDetail();render();notify(`Response for ${r.id} saved locally.`);break}
+    case'create-case':collectDetail();state.modal='case';render();break;
+    case'submit-case':{const name=$('#caseTitle').value.trim();if(!name){notify('Please enter a case title.');return}let cs=[];try{cs=JSON.parse(localStorage.getItem('argon-v1-local-cases')||'[]')}catch(e){}const newCase={id:'CASE-'+String(Date.now()).slice(-6),name,owner:$('#caseOwner').value,priority:$('#casePriority').value,description:$('#caseDescription').value,findingId:state.selectedId,created:new Date().toISOString()};cs.push(newCase);if(apiEnabled)fetch('/api/cases',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:name,owner:newCase.owner,priority:newCase.priority,description:newCase.description,findingId:newCase.findingId})}).catch(()=>notify('Case saved in browser; server unavailable.'));try{localStorage.setItem('argon-v1-local-cases',JSON.stringify(cs))}catch(e){}state.modal=null;render();notify('Mock remediation case created locally.');break}
+    case'close-modal':state.modal=null;render();break;
+    case'dismiss-modal':if(target.classList.contains('modal-layer')){state.modal=null;render()}break;
+    default:break;
+  }}
+  $('#app').addEventListener('click',ev=>{
+    const target=ev.target.closest('[data-action]');if(target){ev.preventDefault();handleAction(target.dataset.action,target);return}
+    const nav=ev.target.closest('[data-nav]');if(nav){state.nav=nav.dataset.nav;state.view='list';state.selected.clear();state.filtersOpen=false;history.replaceState(null,'',state.nav==='Argon Findings'?'#findings':'#'+encodeURIComponent(state.nav.toLowerCase()));render();window.scrollTo({top:0,behavior:'instant'});return}
+    const sort=ev.target.closest('[data-sort]');if(sort){if(state.sort===sort.dataset.sort)state.sortAsc=!state.sortAsc;else{state.sort=sort.dataset.sort;state.sortAsc=true}state.page=1;render();return}
+    const row=ev.target.closest('tr[data-row-id]');if(row&&!ev.target.closest('.row-check'))goDetail(row.dataset.rowId);
+  });
+  $('#app').addEventListener('change',ev=>{
+    if(ev.target.id==='checkAll'){const {paged}=pageInfo(filteredRows());for(let r of paged){if(ev.target.checked)state.selected.add(r.id);else state.selected.delete(r.id)}render();return}
+    if(ev.target.classList.contains('row-check')){if(ev.target.checked)state.selected.add(ev.target.value);else state.selected.delete(ev.target.value);render();return}
+    if(ev.target.id==='pageSize'){state.pageSize=Number(ev.target.value);state.page=1;render();return}
+    if(ev.target.id==='appFilter'){state.draftApp=ev.target.value;return}
+    if(ev.target.id==='responseStatus'){let x=$('#statusHelp');if(x)x.textContent=ev.target.value==='In Progress'?'The application team is evaluating and/or designing and implementing a fix.':ev.target.value==='Resolved'?'The vulnerability has been fixed and validated.':'Select the current remediation state of the finding.';return}
+    if(ev.target.id==='attachFile'){let files=[...ev.target.files];let oversized=files.filter(f=>f.size>25*1024*1024);state.attachment=files.filter(f=>f.size<=25*1024*1024).map(f=>f.name);$('#file-names').textContent=state.attachment.length?state.attachment.join(', '):'No eligible files chosen';if(oversized.length)notify('Files larger than 25 MB are not allowed.');return}
+  });
+  $('#app').addEventListener('input',ev=>{if(ev.target.id==='keyword')state.draftText=ev.target.value});
+  $('#app').addEventListener('keydown',ev=>{if(ev.target.id==='keyword'&&ev.key==='Enter'){ev.preventDefault();handleAction('apply-search',ev.target)}if(ev.key==='Escape'&&state.modal){state.modal=null;render()}});
+  window.addEventListener('popstate',()=>{let hash=decodeURIComponent(location.hash);let found=hash.match(/^#finding-(FND-\d+)$/);if(found&&rows.some(r=>r.id===found[1])){state.nav='Argon Findings';state.view='detail';state.selectedId=found[1]}else{state.nav='Argon Findings';state.view='list';state.selectedId=null}render()});
+  const found=location.hash.match(/^#finding-(FND-\d+)$/);if(found&&rows.some(r=>r.id===found[1])){state.selectedId=found[1];state.view='detail'}
+  // Read-only context bridge for the offline AI demo widget. Exposes synthetic records only.
+  window.ArgonDemo = Object.freeze({
+    getContext(){
+      const visible = filteredRows();
+      const selected = state.view === 'detail' ? rows.find(r => r.id === state.selectedId) : null;
+      const safeRecord = r => r ? ({
+        id:r.id, app:r.app, application:r.application, resource:r.resource,
+        name:r.name, score:r.score, risk:r.risk, category:r.category,
+        status:r.status, exposure:r.exposure, reviewed:r.reviewed,
+        planned:r.planned, comment:r.comment
+      }) : null;
+      return {
+        view:state.view, nav:state.nav, finding:safeRecord(selected),
+        filter:state.filterText, applicationFilter:state.filterApp,
+        totals:{all:rows.length, visible:visible.length,
+          critical:visible.filter(r=>r.risk==='CRITICAL').length,
+          high:visible.filter(r=>r.risk==='HIGH').length,
+          inProgress:visible.filter(r=>r.status==='In Progress').length,
+          notStarted:visible.filter(r=>r.status==='Not Started').length,
+          resolved:visible.filter(r=>r.status==='Resolved').length},
+        samples:visible.slice(0,8).map(safeRecord)
+      };
+    },
+    insertDraft(text){
+      if(state.view!=='detail')return false;
+      const field=$('#responseComment');
+      if(!field)return false;
+      field.value=field.value.trim()?field.value.trim()+'\n\n'+text:text;
+      field.focus();
+      notify('AI sample draft inserted. Review and click Save to keep it.');
+      return true;
+    }
+  });
+  // In backend mode the server acts as the source of truth; file:// remains fully offline.
+  if(apiEnabled){
+    fetch('/api/findings').then(r=>r.ok?r.json():Promise.reject(Error('unavailable'))).then(serverRows=>{
+      if(!Array.isArray(serverRows)||!serverRows.length)return;
+      backendReady=true;
+      rows.splice(0,rows.length,...serverRows.map(r=>({...r,attachments:[]})));
+      render();
+    }).catch(()=>{});
+    const params=new URLSearchParams(location.hash.replace(/^#/,''));
+    if(params.has('confirm')||params.has('unsubscribe')){
+      state.subscriptionToken=params.get('confirm')||params.get('unsubscribe');
+      state.modal=params.has('confirm')?'subscription-confirm':'subscription-unsubscribe';
+    }
+  }
+  render();
+})();
+
+</script>
+  <script>
+/* Fictional AI assistant UX — deterministic, offline sample responses.
+   No LLM service, telemetry, fetch, persistence or external API calls. */
+(() => {
+  'use strict';
+  const bridge = window.ArgonDemo;
+  if (!bridge) return;
+  const escape = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const icon = (name, size=20) => {
+    const paths = {
+      spark:'<path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7z"/><path d="m19 17 .6 2.4L22 20l-2.4.6L19 23l-.6-2.4L16 20l2.4-.6z"/>',
+      chat:'<path d="M21 11.6a8.6 8.6 0 0 1-8.6 8.6c-1.4 0-2.9-.4-4.1-1L3 21l1.8-5.2a8.6 8.6 0 1 1 16.2-4.2Z"/>',
+      close:'<path d="M5 5l14 14M19 5 5 19"/>',
+      send:'<path d="m22 2-7 20-4-9-9-4 20-7Z"/><path d="M22 2 11 13"/>',
+      refresh:'<path d="M3 11a9 9 0 0 1 15.6-5.7L21 8M21 3v5h-5M21 13a9 9 0 0 1-15.6 5.7L3 16m0 5v-5h5"/>',
+      shield:'<path d="m12 2 8 4v6c0 5-3 8-8 10-5-2-8-5-8-10V6z"/><path d="m9 12 2 2 4-4"/>',
+      arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',
+      pen:'<path d="m4 20 4-.8L20 7a2 2 0 0 0-3-3L5 16z"/>',
+      check:'<path d="m4 12 5 5L20 6"/>'
+    };
+    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.spark}</svg>`;
+  };
+  const root = document.createElement('div');
+  root.id = 'ai-assistant-root';
+  document.body.append(root);
+
+  let isOpen = false;
+  let opening = false;
+  let draft = '';
+  let hasSeenWelcome = false;
+  const history = [];
+  const nowTime = () => new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
+  const ctx = () => bridge.getContext();
+  const detail = c => c.view==='detail' && c.finding;
+  const makeMessage = (role, text, options={}) => ({role,text,at:nowTime(),...options});
+  const welcome = () => {
+    const c=ctx();
+    return detail(c) ?
+      `I'm your AI Enhance assistant for this **fictional security finding**. I can explain ${c.finding.id}, suggest a remediation plan, or draft an owner response. Everything here stays in your browser.` :
+      `Hi! I'm **AI Enhance**. I can summarize the sample findings, surface priorities, and suggest next steps. This is an offline demo using **synthetic data**.`;
+  };
+  const actionsFor = c => detail(c) ? [
+    ['summarize','Summarize finding'],
+    ['remediate','Suggest remediation'],
+    ['explain','Explain risk'],
+    ['draft','Draft owner response']
+  ] : [
+    ['summarize','Summarize findings'],
+    ['prioritize','Prioritize backlog'],
+    ['remediate','Remediation playbook'],
+    ['explain','Explain risk scores']
+  ];
+  function buildReply(kind, c) {
+    const r=detail(c)?c.finding:null;
+    if(kind==='summarize' && r) return {text:
+      `**${r.id} · Finding brief**\n\n${r.name}\n\n**Application:** ${r.application} · ${r.app}\n**Resource:** ${r.resource}\n**Risk:** ${r.risk} (CVSS ${Number(r.score).toFixed(1)})\n**Category:** ${r.category}\n**Current status:** ${r.status}\n\n**Suggested next step:** Confirm affected entry points and ownership, then create a regression test before fixing the synthetic example.`};
+    if(kind==='summarize') return {text:
+      `**Portfolio snapshot · ${c.totals.visible} visible sample findings**\n\n• ${c.totals.critical} Critical · ${c.totals.high} High\n• ${c.totals.inProgress} In progress · ${c.totals.notStarted} Not started · ${c.totals.resolved} Resolved\n${c.filter?`• Active keyword: “${c.filter}”\n`:''}\n**Suggested next step:** Triage the highest scoring unresolved examples first, then confirm exploitability and asset importance. These counts reflect the current demo filters.`};
+    if(kind==='prioritize') {
+      const top=[...c.samples].filter(x=>x.status!=='Resolved').sort((a,b)=>b.score-a.score).slice(0,4);
+      return {text:top.length ? `**Suggested triage order (visible demo rows)**\n\n${top.map((x,i)=>`${i+1}. **${x.id}** · CVSS ${Number(x.score).toFixed(1)} · ${x.name}\n   ${x.application} · ${x.status}`).join('\n')}\n\nOrder is based on CVSS alone for this demo. In production, include exploitability, exposure, business impact, controls, and known exploitation.` : 'No open sample findings are visible in the current view. Try clearing the filters.'};
+    }
+    if(kind==='remediate' && r) return {text:
+      `**Remediation plan · ${r.id}**\n\n1. **Validate:** Reproduce the sample scenario in an isolated test environment.\n2. **Contain:** Review exposed endpoints and enforce least privilege or input constraints as relevant to ${r.category}.\n3. **Fix:** Update the affected code or configuration; add an automated negative-path test.\n4. **Verify:** Run targeted security regression tests and rescan.\n5. **Document:** Record the fix owner, evidence, and target date in the response form.\n\nThis is a generic starting point, not a verified root-cause assessment.`};
+    if(kind==='remediate') return {text:
+      `**Example remediation workflow**\n\n1. Categorize sample findings by risk, owner, and component.\n2. Create work items for the highest-impact unresolved issues.\n3. Suggest a patch or configuration change and peer-review it.\n4. Add automated regression tests and rescan.\n5. Update remediation status and attach sanitized evidence.\n\nUse the detail-page action to get a context-specific recommendation.`};
+    if(kind==='explain' && r) return {text:
+      `**Risk explanation · ${r.id}**\n\nThe sample finding is rated **${r.risk}**, with a synthetic CVSS v3.1 base score of **${Number(r.score).toFixed(1)} / 10**.\n\n**What to investigate:** Whether ${r.category} is genuinely reachable; who can trigger it; and which data or operations could be affected.\n\nCVSS captures technical severity, not your organization's full business risk. Exposure, compensating controls, and exploit evidence may change priority.`};
+    if(kind==='explain') return {text:
+      `**CVSS quick guide**\n\n• **Critical:** 9.0–10.0\n• **High:** 7.0–8.9\n• **Medium:** 4.0–6.9\n• **Low:** 0.1–3.9\n\nA score measures characteristics of a vulnerability, but does not by itself establish exploitability in a specific environment. Combine it with exposure, asset value, and available evidence.`};
+    if(kind==='draft' && r){
+      const draftText=`Review started for ${r.id} (${r.category}) in ${r.application}. We will validate the finding in a non-production test environment, confirm affected entry points, assign an owner, implement a targeted fix with regression coverage, and document validation evidence. Proposed status: In Progress. Target date: ${r.planned || 'TBD'}.`;
+      return {text:`**Suggested owner response — review before using**\n\n${draftText}\n\nYou can insert this into the App Owner Response field using the button below. Nothing will be saved until you click **Save**.`, draft:draftText};
+    }
+    if(kind==='draft') return {text:'Open a sample finding detail first, then I can prepare an owner response based on its synthetic application, category, and risk.'};
+    return {text:`This offline prototype doesn't call a live AI model, so I can only provide scripted, context-aware demo guidance. Choose a quick action below to explore risk summaries, remediation ideas, or owner-response drafting.\n\nFor production, the chat interface can be connected to an approved internal AI endpoint with access controls and data minimization.`};
+  }
+  const guessIntent = question => {
+    const q=question.toLowerCase();
+    if(/draft|write|response|comment|备注|整改反馈|生成回复|草拟/.test(q))return 'draft';
+    if(/priorit|which.*first|urgent|排序|优先|先处理/.test(q))return 'prioritize';
+    if(/remedi|fix|repair|mitigat|patch|修复|建议|怎么改|整改方案/.test(q))return 'remediate';
+    if(/score|cvss|risk|rating|why|explain|严重|风险|分数|解释/.test(q))return 'explain';
+    if(/summar|overview|brief|summary|当前|总结|概览|摘要|有多少/.test(q))return 'summarize';
+    return 'unknown';
+  };
+  function messageMarkup(msg){
+    // Tiny safe markdown renderer: escape first and allow only bold, line breaks, and plain text.
+    const formatted=escape(msg.text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    return `<div class="ai-message ai-message-${msg.role}">
+      ${msg.role==='assistant'?`<span class="ai-message-avatar">${icon('spark',14)}</span>`:''}
+      <div class="ai-message-wrap"><div class="ai-bubble-text">${formatted}</div>
+      ${msg.draft?`<button class="ai-insert" data-ai-action="insert" data-draft-id="${history.indexOf(msg)}">${icon('pen',14)} Insert into response ${icon('arrow',13)}</button>`:''}
+      <div class="ai-message-time">${escape(msg.at)}</div></div></div>`;
+  }
+  function render() {
+    const c=ctx();
+    const scope=detail(c)?`${c.finding.id} · Finding detail`:`${c.nav} · Portfolio`;
+    const chips=actionsFor(c).map(([id,name])=>`<button class="ai-chip" data-ai-quick="${id}">${icon('spark',12)} ${escape(name)}</button>`).join('');
+    root.innerHTML = `
+      ${isOpen?`<section class="ai-chat-window ${opening?'ai-chat-opening':''}" role="dialog" aria-modal="false" aria-label="AI Enhance assistant">
+        <header class="ai-chat-header"><div class="ai-heading-mark">${icon('spark',24)}</div><div class="ai-heading-text"><div class="ai-heading-name">AI Enhance <span>DEMO</span></div><div class="ai-heading-subtitle"><i></i> Offline assistant · Synthetic data only</div></div>
+          <button class="ai-icon-btn" data-ai-action="reset" title="New conversation" aria-label="New conversation">${icon('refresh',17)}</button>
+          <button class="ai-icon-btn" data-ai-action="close" title="Close chat" aria-label="Close chat">${icon('close',19)}</button></header>
+        <div class="ai-context-bar">${icon('shield',14)} <span>${escape(scope)}</span> <span class="ai-local-chip">LOCAL</span></div>
+        <div class="ai-messages" id="ai-messages" role="log" aria-live="polite">${history.map(messageMarkup).join('')}</div>
+        <div class="ai-bottom"><div class="ai-quick-title">${icon('spark',13)} QUICK ACTIONS</div>
+          <div class="ai-quick-grid">${chips}</div>
+          <form id="ai-chat-form"><label class="ai-sr-only" for="ai-chat-input">Ask a question</label><div class="ai-input-wrap"><textarea id="ai-chat-input" rows="1" maxlength="700" placeholder="Ask about findings or remediation...">${escape(draft)}</textarea><button type="submit" class="ai-send" aria-label="Send message" ${draft.trim()?'':'disabled'}>${icon('send',17)}</button></div></form>
+          <p class="ai-chat-footnote">${icon('shield',12)} Local simulation · No data sent to external services</p>
+        </div>
+      </section>`:''}
+      <button class="ai-fab" id="ai-fab" data-ai-action="toggle" aria-label="${isOpen?'Close AI Enhance':'Open AI Enhance'}" aria-expanded="${isOpen}">${icon(isOpen?'close':'spark',24)}${!isOpen?'<span class="ai-fab-label">Ask AI</span>':''}</button>`;
+    if(isOpen){const box=root.querySelector('#ai-messages');if(box)box.scrollTop=box.scrollHeight;}
+  }
+  function open(){isOpen=true;opening=true;if(!hasSeenWelcome){history.push(makeMessage('assistant',welcome()));hasSeenWelcome=true;}render();opening=false;root.querySelector('#ai-chat-input')?.focus();}
+  function close(){isOpen=false;render();root.querySelector('#ai-fab')?.focus();}
+  function respond(kind, question){
+    const c=ctx();
+    if(!hasSeenWelcome){history.push(makeMessage('assistant',welcome()));hasSeenWelcome=true;}
+    history.push(makeMessage('user', question));
+    history.push(makeMessage('assistant', buildReply(kind,c).text, {draft:buildReply(kind,c).draft || ''}));
+    draft='';render();root.querySelector('#ai-chat-input')?.focus();
+  }
+  root.addEventListener('click', e=>{
+    const quick=e.target.closest('[data-ai-quick]');
+    if(quick){const id=quick.dataset.aiQuick;respond(id,quick.textContent.trim());return;}
+    const action=e.target.closest('[data-ai-action]');if(!action)return;
+    switch(action.dataset.aiAction){
+      case 'toggle':isOpen?close():open();break;
+      case 'close':close();break;
+      case 'reset':history.length=0;hasSeenWelcome=false;draft='';open();break;
+      case 'insert':{
+        const msg=history[Number(action.dataset.draftId)];
+        if(msg?.draft && bridge.insertDraft(msg.draft)){
+          action.innerHTML=`${icon('check',14)} Added to response`;
+          action.disabled=true;
+        } else {
+          history.push(makeMessage('assistant','Please open a sample finding detail before inserting a draft.'));
+          render();
+        }
+        break;
+      }
+    }
+  });
+  root.addEventListener('input',e=>{
+    if(e.target.id!=='ai-chat-input')return;
+    draft=e.target.value;
+    const send=root.querySelector('.ai-send');if(send)send.disabled=!draft.trim();
+    e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,110)+'px';
+  });
+  root.addEventListener('submit',e=>{
+    if(e.target.id!=='ai-chat-form')return;
+    e.preventDefault();const val=draft.trim();if(!val)return;
+    respond(guessIntent(val),val);
+  });
+  root.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&isOpen){e.preventDefault();close()}
+    if(e.target.id==='ai-chat-input'&&e.key==='Enter'&&!e.shiftKey){e.preventDefault();root.querySelector('#ai-chat-form')?.requestSubmit()}
+  });
+  render();
+})();
+
+</script>
+</body>
+</html>
