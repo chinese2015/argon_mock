@@ -2,7 +2,7 @@
    No LLM service, telemetry, fetch, persistence or external API calls. */
 (() => {
   'use strict';
-  const bridge = window.ArgonDemo;
+  const bridge = window.MythosDemo;
   if (!bridge) return;
   const escape = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const icon = (name, size=20) => {

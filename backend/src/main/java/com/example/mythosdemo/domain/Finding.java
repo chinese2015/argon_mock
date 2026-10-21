@@ -1,4 +1,4 @@
-package com.example.argondemo.domain;
+package com.example.mythosdemo.domain;
 import jakarta.persistence.*;
 @Entity
 @Table(name="findings")
@@ -26,8 +26,9 @@ public class Finding {
     public String planned="2026-12-15";
     public String actual="";
     public int age;
-    // --- M0: Argon AI Brain minimal fields (plan §2.3) ---
+    // --- M0: Mythos AI Brain minimal fields (plan §2.3) ---
     /** Optimistic-locking / source snapshot version. */
+    @Version
     public long revision=1;
     public String ownerId;
     public String ownerTeamsId;

@@ -1,9 +1,10 @@
-package com.example.argondemo.api;
-import com.example.argondemo.domain.*;
+package com.example.mythosdemo.api;
+import com.example.mythosdemo.domain.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 import java.util.*;
@@ -13,7 +14,7 @@ public class FindingController {
     private final FindingRepository findings;
     private final CaseRepository cases;
     public FindingController(FindingRepository findings, CaseRepository cases) { this.findings=findings;this.cases=cases; }
-    @GetMapping("/health") public Map<String,Object> health(){return Map.of("service","argon-demo","status","ok","data","synthetic-only");}
+    @GetMapping("/health") public Map<String,Object> health(){return Map.of("service","mythos-demo","status","ok","data","synthetic-only");}
     @GetMapping("/findings") public List<Finding> all(){return findings.findAll().stream().sorted(Comparator.comparing(f->f.id)).toList();}
     @GetMapping("/findings/{id}") public Finding one(@PathVariable String id){return findings.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Finding not found"));}
     /** Live-aggregated overview statistics; the UI must not hardcode these (plan §2.2). */
@@ -52,7 +53,7 @@ public class FindingController {
         @Size(max=120) String remediationJobId,
         @Size(max=120) String codeFixCommit,
         @Size(max=500) String prUrl) {}
-    @PatchMapping("/findings/{id}") public Finding update(@PathVariable String id,@Valid @RequestBody UpdateFinding req){
+    @PatchMapping("/findings/{id}") @Transactional public Finding update(@PathVariable String id,@Valid @RequestBody UpdateFinding req){
         Finding f=one(id);
         if(req.status()!=null){
             // Quality gate (plan §2.2): findings bound to an AI remediation job cannot be
@@ -76,7 +77,6 @@ public class FindingController {
         if(req.remediationJobId()!=null) f.remediationJobId=req.remediationJobId();
         if(req.codeFixCommit()!=null) f.codeFixCommit=req.codeFixCommit();
         if(req.prUrl()!=null) f.prUrl=req.prUrl();
-        f.revision++;
         return findings.save(f);
     }
     public record CreateCase(

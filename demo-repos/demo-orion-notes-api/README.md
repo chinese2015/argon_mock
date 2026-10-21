@@ -1,6 +1,6 @@
 # demo-orion-notes-api (fictional)
 
-Argon AI Brain 演示仓库。**故意包含硬编码凭据漏洞（CWE-798）**，用于主动漏洞修复工作流（Workflow A）演示。
+Mythos AI Brain 演示仓库。**故意包含硬编码凭据漏洞（CWE-798）**，用于主动漏洞修复工作流（Workflow A）演示。
 
 - 漏洞位置：`src/main/java/com/example/notes/AppConfig.java`（`adminPassword` 硬编码字面量）
 - 基线测试：`mvn test` → `noHardcodedAdminPassword` 与 `leakedDemoPasswordNotPresent` **预期失败**

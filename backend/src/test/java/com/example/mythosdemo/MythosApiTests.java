@@ -1,5 +1,5 @@
-package com.example.argondemo;
-import com.example.argondemo.domain.*;
+package com.example.mythosdemo;
+import com.example.mythosdemo.domain.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.Matchers.*;
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(properties={"spring.datasource.url=jdbc:h2:mem:argon-test;DB_CLOSE_DELAY=-1","spring.jpa.hibernate.ddl-auto=create-drop","notification.mode=preview","notification.outbox-dir=./target/test-outbox"})
-class ArgonApiTests {
+@TestPropertySource(properties={"spring.datasource.url=jdbc:h2:mem:mythos-test;DB_CLOSE_DELAY=-1","spring.jpa.hibernate.ddl-auto=create-drop","notification.mode=preview","notification.outbox-dir=./target/test-outbox"})
+class MythosApiTests {
     @Autowired MockMvc mvc;
     @Autowired SubscriptionRepository subs;
     @Test void syntheticFindingsAreServed() throws Exception {

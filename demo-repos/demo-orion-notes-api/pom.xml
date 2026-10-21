@@ -7,7 +7,7 @@
   <artifactId>demo-orion-notes-api</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>demo-orion-notes-api</name>
-  <description>Fictional demo app for the Argon AI Brain hackathon. Hardcoded credentials (CWE-798) training sample.</description>
+  <description>Fictional demo app for the Mythos AI Brain hackathon. Hardcoded credentials (CWE-798) training sample.</description>
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

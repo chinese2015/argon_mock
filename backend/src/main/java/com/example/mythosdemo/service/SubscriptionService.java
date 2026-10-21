@@ -1,5 +1,5 @@
-package com.example.argondemo.service;
-import com.example.argondemo.domain.*;
+package com.example.mythosdemo.service;
+import com.example.mythosdemo.domain.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -45,7 +45,7 @@ public class SubscriptionService {
         subscriptions.save(s);
         // Public base URL is fixed config; do not trust the inbound Host header.
         String confirmUrl=baseUrl+"/#confirm="+confirm;
-        mail.deliver(s.email,"Confirm your Argon DEMO findings digest",
+        mail.deliver(s.email,"Confirm your Mythos DEMO findings digest",
            "You requested a subscription to a SYNTHETIC TRAINING DEMO.\n\n"
            +"Frequency: "+frequency+"\nMinimum risk: "+minRisk+"\nScope: "+(appCode.isBlank()?"All demo apps":appCode)
            +"\n\nOpen this URL, then click Confirm:\n"+confirmUrl
@@ -83,7 +83,7 @@ public class SubscriptionService {
                 .filter(f->level(f.risk)>=level(s.minRisk))
                 .sorted(Comparator.comparingDouble((Finding f)->f.score).reversed()).toList();
             if(match.isEmpty())continue;
-            String body="Argon DEMO — Synthetic Vulnerability Digest\n\n"
+            String body="Mythos DEMO — Synthetic Vulnerability Digest\n\n"
                 +"TRAINING DATA ONLY. DO NOT TREAT AS A REAL SECURITY ALERT.\n\n"
                 +"Open findings matching your subscription: "+match.size()+"\n"
                 +"Frequency: "+s.frequency+"; Minimum severity: "+s.minRisk+"\n\n"
@@ -92,7 +92,7 @@ public class SubscriptionService {
                 + (match.size()>20?"\n... and "+(match.size()-20)+" more (see demo dashboard).":"")
                 +"\n\nOpen dashboard: "+baseUrl+"/\n"
                 +"Unsubscribe: "+baseUrl+"/#unsubscribe="+s.unsubscribeToken;
-            mail.deliver(s.email,"[Argon DEMO] "+match.size()+" open synthetic findings",body);
+            mail.deliver(s.email,"[Mythos DEMO] "+match.size()+" open synthetic findings",body);
             s.lastDeliveredAt=Instant.now();subscriptions.save(s);count++;
         }
         return count;

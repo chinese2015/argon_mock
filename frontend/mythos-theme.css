@@ -1,4 +1,4 @@
-/* Argon: cobalt enterprise palette (generic; no corporate trademarks). */
+/* Mythos: cobalt enterprise palette (generic; no corporate trademarks). */
 :root{--blue:#0756ce;--darkblue:#073c9c;--deepblue:#09245c;--lightblue:#eaf2ff;--border:#d9e4f6;--ink:#182b4d;--muted:#6880a2;--bg:#f6f9ff;--shadow:0 12px 35px rgba(15,56,142,.12)}
 body{background:#f6f9ff}
 .sidebar{background:linear-gradient(164deg,#095ad4 0%,#073fbb 38%,#052b86 100%);box-shadow:4px 0 24px rgba(11,40,132,.12)}
@@ -20,9 +20,9 @@ body{background:#f6f9ff}
 #ai-assistant-root .ai-chip svg,#ai-assistant-root .ai-quick-title svg,#ai-assistant-root .ai-context-bar>svg{color:#0756ce}
 #ai-assistant-root .ai-chip:hover{background:#edf4ff;color:#0644a0;border-color:#8db5f0}
 #ai-assistant-root .ai-input-wrap:focus-within{border-color:#428cf0;box-shadow:0 0 0 3px rgba(13,93,215,.1)}
-.argon-subscribe-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;margin-bottom:15px;background:linear-gradient(100deg,#eef5ff,#fff);border:1px solid #cfdef8;border-radius:9px;color:#27528e;font-size:12px}
-.argon-subscribe-banner strong{color:#073e9c}.argon-form-note{font-size:11px;line-height:1.6;color:#6880a2;margin:12px 0 0}
-.argon-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.argon-form-grid .form-field:first-child{grid-column:span 2}
-.argon-subscribe-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid #bad0f3;border-radius:7px;background:#fff;color:#064db5;font-weight:700;padding:8px 13px}
-.argon-subscribe-btn:hover{background:#e9f2ff}
-@media(max-width:650px){.argon-subscribe-banner{align-items:flex-start;flex-direction:column}.argon-form-grid{grid-template-columns:1fr}.argon-form-grid .form-field:first-child{grid-column:auto}}
+.mythos-subscribe-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;margin-bottom:15px;background:linear-gradient(100deg,#eef5ff,#fff);border:1px solid #cfdef8;border-radius:9px;color:#27528e;font-size:12px}
+.mythos-subscribe-banner strong{color:#073e9c}.mythos-form-note{font-size:11px;line-height:1.6;color:#6880a2;margin:12px 0 0}
+.mythos-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mythos-form-grid .form-field:first-child{grid-column:span 2}
+.mythos-subscribe-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid #bad0f3;border-radius:7px;background:#fff;color:#064db5;font-weight:700;padding:8px 13px}
+.mythos-subscribe-btn:hover{background:#e9f2ff}
+@media(max-width:650px){.mythos-subscribe-banner{align-items:flex-start;flex-direction:column}.mythos-form-grid{grid-template-columns:1fr}.mythos-form-grid .form-field:first-child{grid-column:auto}}

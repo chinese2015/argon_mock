@@ -1,10 +1,12 @@
-# Argon — Synthetic Vulnerability Remediation Demo
+# Mythos — Synthetic Vulnerability Remediation Demo
+
+> This README covers the base Mock demo. For the integrated DSH / Brain / sandbox / PR system, see the [project entry](../README.md), [architecture](../docs/Mythos_系统架构.md), and [usage guide](../docs/Mythos_使用说明.md). The remote host is now `ubuntu.huaxia2002.cn`; current deployed ports are listed in those guides.
 
 This is a **fictional** security findings dashboard: enterprise-blue frontend, local scripted AI helper, Spring Boot REST backend, and double-opt-in email digest subscriptions. No employer brand, employee identity, real asset or resource ID, source photo/video, or production security finding is included.
 
 ## 1. Explore the frontend without installation
 
-Open `Argon_Standalone_Demo.html` directly in Chrome/Edge. Search/filter/sort, open findings, edit responses, and use **Ask AI**. The standalone HTML operates entirely offline. Its **Email Digest** form is a preview: actual subscriptions require the backend.
+Open `Mythos_Standalone_Demo.html` directly in Chrome/Edge. Search/filter/sort, open findings, edit responses, and use **Ask AI**. The standalone HTML operates entirely offline. Its **Email Digest** form is a preview: actual subscriptions require the backend.
 
 Alternatively serve `frontend/` as static files. JavaScript and styles are in separate readable files.
 
@@ -17,7 +19,7 @@ mvn spring-boot:run
 # Health: curl http://localhost:8080/api/health
 ```
 
-The Spring Boot server serves the entire frontend from `src/main/resources/static`. It also seeds **234 synthetic findings** to a persistent, local H2 database under `backend/data/argon-demo.mv.db`, exposes REST endpoints, and runs a scheduled digest job at **08:00 UTC every day**. Weekly subscriptions deliver on Monday.
+The Spring Boot server serves the entire frontend from `src/main/resources/static`. It also seeds **234 synthetic findings** to a persistent, local H2 database under `backend/data/mythos-demo.mv.db`, exposes REST endpoints, and runs a scheduled digest job at **08:00 UTC every day**. Weekly subscriptions deliver on Monday.
 
 **Default email mode is preview**: all email messages are written as `.eml` files under `backend/data/outbox/`. **Nothing is sent over SMTP.** Even in backend mode, the AI Chatbox is a scripted offline helper, not a real LLM. New findings and owner updates are synthetic/demo only.
 
@@ -42,7 +44,7 @@ The local manual trigger is rejected in SMTP mode and for non-loopback clients. 
 MAIL_MODE=smtp \
 SMTP_HOST=smtp.example.test SMTP_PORT=587 \
 SMTP_USER=your_demo_user SMTP_PASSWORD=your_demo_password \
-MAIL_FROM=argon-demo@example.test \
+MAIL_FROM=mythos-demo@example.test \
 PUBLIC_BASE_URL=https://your-approved-demo-host.example \
 SMTP_ALLOWED_RECIPIENTS=your-test-mailbox@example.test \
 mvn spring-boot:run
@@ -50,7 +52,7 @@ mvn spring-boot:run
 
 This deliberately requires **both** `MAIL_MODE=smtp` and an exact recipient allowlist in `SMTP_ALLOWED_RECIPIENTS`. Mail is refused if the recipient is not in that list. Do not use real employee distributions, real vulnerability details, or real corporate asset inventories in this sample. To change delivery time/zone, update `notification.cron` and `notification.zone` in `application.yml`.
 
-## 2.1 M0 data baseline for the Argon AI Brain (plan §2.2/§2.3)
+## 2.1 M0 data baseline for the Mythos AI Brain (plan §2.2/§2.3)
 
 The seed data now matches the plan's baseline exactly: **234** findings, **64** CRITICAL / **133** HIGH / **37** MEDIUM, **199** Not Started / **26** In Progress (seed-only simulation, *not* AI-taken-over) / **9** Resolved, **225** Open. The Overview page aggregates **live from the backend** (`GET /api/findings/stats`) instead of hardcoded numbers.
 
@@ -108,7 +110,7 @@ The server responds `202 Accepted`; a confirmation `.eml` is written locally. Th
 ## Project layout
 
 ```
-Argon_Standalone_Demo.html      # offline single-file frontend
+Mythos_Standalone_Demo.html      # offline single-file frontend
 frontend/                       # readable frontend sources
 backend/pom.xml                 # Spring Boot 3.5.x + Java 17
 backend/src/main/java/          # synthetic APIs + scheduler + preview email

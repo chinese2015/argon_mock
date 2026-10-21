@@ -1,5 +1,5 @@
-package com.example.argondemo.service;
-import com.example.argondemo.domain.*;
+package com.example.mythosdemo.service;
+import com.example.mythosdemo.domain.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.util.UUID;
@@ -61,7 +61,7 @@ public class SeedData implements CommandLineRunner {
         for(int i=0;i<234;i++){
             Finding f=new Finding();String[] a=APPS[i%APPS.length], x=EXAMPLES[i%EXAMPLES.length];
             f.id="FND-%05d".formatted(i+1);
-            f.uuid=UUID.nameUUIDFromBytes(("argon-example-"+i).getBytes(java.nio.charset.StandardCharsets.UTF_8)).toString();
+            f.uuid=UUID.nameUUIDFromBytes(("mythos-example-"+i).getBytes(java.nio.charset.StandardCharsets.UTF_8)).toString();
             f.app=a[0];f.application=a[1];f.applicationName=a[2];f.resource=a[3];
             f.name=x[0];f.category=x[1];
             f.score=i<EXAMPLES.length?Double.parseDouble(x[2]):Math.round((6.4+(i%36)/10.0)*10.0)/10.0;

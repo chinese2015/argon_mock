@@ -1,5 +1,5 @@
-package com.example.argondemo.api;
-import com.example.argondemo.service.*;
+package com.example.mythosdemo.api;
+import com.example.mythosdemo.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;

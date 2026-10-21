@@ -5,9 +5,9 @@ server:
     include-message: always
 spring:
   application:
-    name: argon-demo
+    name: mythos-demo
   datasource:
-    url: jdbc:h2:file:./data/argon-demo;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:file:./data/mythos-demo;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password: ""
@@ -29,7 +29,7 @@ spring:
 notification:
   mode: ${MAIL_MODE:preview} # preview saves .eml to ./data/outbox; never sends to a remote mail server
   base-url: ${PUBLIC_BASE_URL:http://localhost:8080}
-  from: ${MAIL_FROM:argon-demo@example.test}
+  from: ${MAIL_FROM:mythos-demo@example.test}
   smtp-allowed-recipients: ${SMTP_ALLOWED_RECIPIENTS:}
   cron: '0 0 8 * * *'
   zone: UTC

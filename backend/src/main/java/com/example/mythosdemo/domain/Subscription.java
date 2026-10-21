@@ -1,4 +1,4 @@
-package com.example.argondemo.domain;
+package com.example.mythosdemo.domain;
 import jakarta.persistence.*;
 import java.time.Instant;
 @Entity

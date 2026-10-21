@@ -2,7 +2,7 @@
    No LLM service, telemetry, fetch, persistence or external API calls. */
 (() => {
   'use strict';
-  const bridge = window.ArgonDemo;
+  const bridge = window.MythosDemo;
   if (!bridge) return;
   const escape = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const icon = (name, size=20) => {
@@ -35,14 +35,11 @@
   const welcome = () => {
     const c=ctx();
     return detail(c) ?
-      `I'm your AI Enhance assistant for this **fictional security finding**. I can explain ${c.finding.id}, suggest a remediation plan, or draft an owner response. Everything here stays in your browser.` :
+      `This demo is in task-push mode for **${c.finding.id}**. Sending any message here pushes this finding to the Task Center and returns its task link; the message text does not change the task.` :
       `Hi! I'm **AI Enhance**. I can summarize the sample findings, surface priorities, and suggest next steps. This is an offline demo using **synthetic data**.`;
   };
   const actionsFor = c => detail(c) ? [
-    ['summarize','Summarize finding'],
-    ['remediate','Suggest remediation'],
-    ['explain','Explain risk'],
-    ['draft','Draft owner response']
+    ['pushtask','Push to Task Center']
   ] : [
     ['summarize','Summarize findings'],
     ['prioritize','Prioritize backlog'],
@@ -83,9 +80,13 @@
     if(/summar|overview|brief|summary|当前|总结|概览|摘要|有多少/.test(q))return 'summarize';
     return 'unknown';
   };
+  const markdownLinkify = text => escape(text)
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>')
+    .replace(/\n/g,'<br>');
   function messageMarkup(msg){
-    // Tiny safe markdown renderer: escape first and allow only bold, line breaks, and plain text.
-    const formatted=escape(msg.text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    // Tiny safe markdown renderer: escape first and allow only bold, links, line breaks, and plain text.
+    const formatted=markdownLinkify(msg.text);
     return `<div class="ai-message ai-message-${msg.role}">
       ${msg.role==='assistant'?`<span class="ai-message-avatar">${icon('spark',14)}</span>`:''}
       <div class="ai-message-wrap"><div class="ai-bubble-text">${formatted}</div>
@@ -105,8 +106,8 @@
         <div class="ai-messages" id="ai-messages" role="log" aria-live="polite">${history.map(messageMarkup).join('')}</div>
         <div class="ai-bottom"><div class="ai-quick-title">${icon('spark',13)} QUICK ACTIONS</div>
           <div class="ai-quick-grid">${chips}</div>
-          <form id="ai-chat-form"><label class="ai-sr-only" for="ai-chat-input">Ask a question</label><div class="ai-input-wrap"><textarea id="ai-chat-input" rows="1" maxlength="700" placeholder="Ask about findings or remediation...">${escape(draft)}</textarea><button type="submit" class="ai-send" aria-label="Send message" ${draft.trim()?'':'disabled'}>${icon('send',17)}</button></div></form>
-          <p class="ai-chat-footnote">${icon('shield',12)} Local simulation · No data sent to external services</p>
+          <form id="ai-chat-form"><label class="ai-sr-only" for="ai-chat-input">Ask a question</label><div class="ai-input-wrap"><textarea id="ai-chat-input" rows="1" maxlength="700" placeholder="${detail(c)?'Type anything to send this finding to Task Center...':'Ask about findings or remediation...'}" ${pushing?'disabled':''}>${escape(draft)}</textarea><button type="submit" class="ai-send" aria-label="Send message" ${draft.trim()&&!pushing?'':'disabled'}>${icon('send',17)}</button></div></form>
+          <p class="ai-chat-footnote">${icon('shield',12)} ${detail(c)?'Submitting any message pushes this finding to the Task Center':'Local demo · No data sent to external services'}</p>
         </div>
       </section>`:''}
       <button class="ai-fab" id="ai-fab" data-ai-action="toggle" aria-label="${isOpen?'Close AI Enhance':'Open AI Enhance'}" aria-expanded="${isOpen}">${icon(isOpen?'close':'spark',24)}${!isOpen?'<span class="ai-fab-label">Ask AI</span>':''}</button>`;
@@ -118,12 +119,42 @@
     const c=ctx();
     if(!hasSeenWelcome){history.push(makeMessage('assistant',welcome()));hasSeenWelcome=true;}
     history.push(makeMessage('user', question));
-    history.push(makeMessage('assistant', buildReply(kind,c).text, {draft:buildReply(kind,c).draft || ''}));
+    const reply=buildReply(kind,c);
+    history.push(makeMessage('assistant', reply.text, reply.draft ? {draft:reply.draft} : {}));
     draft='';render();root.querySelector('#ai-chat-input')?.focus();
+  }
+  let pushing = false;
+  const taskWorkspaceUrl = taskId => `http://${location.hostname}:13080/mythos/#/work/${encodeURIComponent(taskId)}`;
+  async function pushTask(question=''){
+    const c=ctx();
+    if(!hasSeenWelcome){history.push(makeMessage('assistant',welcome()));hasSeenWelcome=true;}
+    if(!detail(c)){history.push(makeMessage('assistant','Open a sample finding detail first, then I can send it to the task workspace.'));render();return;}
+    if(pushing)return;
+    pushing=true;
+    history.push(makeMessage('user',question.trim()||`Send ${c.finding.id} to the task workspace`));
+    history.push(makeMessage('assistant','Sending the finding to the task workspace…'));
+    render();
+    const fail=note=>{history.pop();history.push(makeMessage('assistant',note));pushing=false;render();};
+    try{
+      const res=await fetch(`/api/findings/${encodeURIComponent(c.finding.id)}/push-task`,{method:'POST'});
+      const text=await res.text();
+      let data=null;try{data=JSON.parse(text)}catch{}
+      if(res.ok&&data&&(data.status==='STARTED'||data.status==='ALREADY_RUNNING')){
+        const workItemId=String(data.workItemId||'').trim();
+        if(!workItemId){fail('The task workspace did not return a work item id, so there is no task link to open.');return;}
+        const link=taskWorkspaceUrl(workItemId);
+        history.pop();
+        history.push(makeMessage('assistant',`Task Center: ${link}`));
+        pushing=false;render();
+      } else {
+        const msg=data&&data.error?(typeof data.error==='string'?data.error:(data.error.message||JSON.stringify(data.error))):`${res.status} ${(text||'').slice(0,160)}`;
+        fail(`**Could not start the task** (${res.status})\n\n${msg}`);
+      }
+    }catch(err){fail(`**Could not reach the demo backend.** ${err&&err.message?err.message:''}`)}
   }
   root.addEventListener('click', e=>{
     const quick=e.target.closest('[data-ai-quick]');
-    if(quick){const id=quick.dataset.aiQuick;respond(id,quick.textContent.trim());return;}
+    if(quick){const id=quick.dataset.aiQuick;if(id==='pushtask'){pushTask(quick.textContent.trim());return;}respond(id,quick.textContent.trim());return;}
     const action=e.target.closest('[data-ai-action]');if(!action)return;
     switch(action.dataset.aiAction){
       case 'toggle':isOpen?close():open();break;
@@ -151,7 +182,8 @@
   root.addEventListener('submit',e=>{
     if(e.target.id!=='ai-chat-form')return;
     e.preventDefault();const val=draft.trim();if(!val)return;
-    respond(guessIntent(val),val);
+    draft='';const input=root.querySelector('#ai-chat-input');if(input){input.value='';input.style.height='auto';}
+    if(detail(ctx()))pushTask(val);else respond(guessIntent(val),val);
   });
   root.addEventListener('keydown',e=>{
     if(e.key==='Escape'&&isOpen){e.preventDefault();close()}

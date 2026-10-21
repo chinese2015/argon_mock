@@ -1,4 +1,4 @@
-package com.example.argondemo.domain;
+package com.example.mythosdemo.domain;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
